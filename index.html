@@ -20,10 +20,14 @@
 			pre { background-color: #212529; color: #00FF00; display: block; font-family: monospace; white-space: pre; margin: 1em 2em; padding: 1em 1em; }
 			blockquote { padding: 25px; }
 			.moreyouknow { border:1px solid black; padding:12px; line-height:16px; margin-top:15px; }
+			.adventure { border:1px solid black; padding-left:12px; padding-right:12px; line-height:16px; margin-top:0px; padding-bottom:5px; }
+			.attribution { font-size: 0.7rem; float:right; }
 			.donate { padding-top:15px; padding-left:30px; line-height:15px; }
 			.donatetable tr,th,td { padding:10px; }
 			.donate-address-label { font-size:1.0rem; }
 			.donate-address-value { font-size:0.70rem; }
+			.right { float:right; border: 1px solid #dee2e6; padding:5px; }
+			.left { float:left; }
         </style>
     </head>
     <body>
@@ -51,7 +55,7 @@
                         <!-- Post header-->
                         <header class="mb-4">
                             <!-- Post title-->
-                            <h1 class="fw-bolder mb-1">Building a Chia Dashboard on Linux - A Walkthrough</h1>
+                            <h1 class="fw-bolder mb-1" id="title">Building a Chia Dashboard on Linux - A Walkthrough</h1>
                             <!-- Post meta content-->
                             <div class="text-muted fst-italic mb-2">Posted on December 14, 2021 by Steve Stepp</div>
                             <!-- Post categories-->
@@ -62,6 +66,7 @@
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Cryptocurrency</a>
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">LAMP</a>
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Bash</a>
+                            <a class="badge bg-secondary text-decoration-none link-light" href="#!">BrightTree</a>
                         </header>
                         <!-- Preview image figure-->
                         <figure class="mb-4"><img class="img-fluid rounded" src="assets/dashboard_screenshot.png" alt="Screenshot of Dashboard" /></figure>
@@ -70,36 +75,38 @@
 
 <!-- ||||||||||||||||||||||||||||| START OF BLOG POST CONTENT ||||||||||||||||||||||||||||| -->
 
+<blockquote>
+<h2 id="brighttree"><b>BrightTree</b></h2>
+<p><em>To make it easier to follow along we are going to name our dashboard "<b>brighttree</b>". You can change it to whatever you want but be sure to 
+replace any instances of "brighttree" in the code with your selected name.</em></p>
+</blockquote>
+<hr>
+
 <p>I got started with Chia back in early April 2020. While I was familar with Linux, I wasn't a daily user and didn't know Bash that well. Over the months since then, 
-I've slowly put together a series of Bash scripts that are basically the backend for a PHP dashboard application for Chia. This post will walk through the steps to build 
+I have slowly put together a series of Bash scripts that are basically the backend for a PHP dashboard application for Chia. This post will walk through the steps to build 
 your own on Linux from scratch.</p>
 
-<p><b>Note</b>: I built this dashbaord for my farm and as a learning experience for Linux &amp; Bash. All my plots are in one NFT and I am in 
+<p><b>Note</b>: I built this dashbaord for my farm and as a learning experience for Linux and Bash. All my plots are in one NFT and I am in 
 <a href='https://pool.space' target='_blank'>Space Pool</a>. I am also co-farming the fork <a href='https://hddcoin.org' target='_blank'>HHDcoin</a>. You may need to make 
 adjust for your configuration.</p>
 
-<p>Warning: This Walkthrough is long. Very long. But I think it's fun, hopefully you will too. Even if you don't build the dashboard, you may find it interesting to browse 
-some of the code.</P>
+<p><b>Warning</b>: This Walkthrough is long. Very long. But I think it is fun; hopefully you will too. Even if you do not build the dashboard, you may find it interesting to browse 
+some of the code.</p>
 
 <hr> 
 
-<p>
-	<h3>Assumptions before we begin:</h3>
-	<ul>
-		<li>Chia is installed on a Linux machine and it is running the farmer (this is important because if it is just a harvester then a lot of the Chia commands won't 
-		work).</li>
-		<li>You are willing to setup Apache, MySQL, PHP, ssmtp, and code in both Bash and PHP.</li>
-		<li>To keep it as simple as possible, Apache, MySQL, and PHP will be setup on the one farmer server. You can set them up on different machines, this was my 
-		original method.</li>
-		<li>You are familiar with Terminal and some form of editor. Other than viewing the dashboard in a web browser, I pretty much do all the work in the Terminal. 
-		I use the editor <b>nano</b> but you can use anything you like, just replace <b>nano</b> with whatever tool you're using.</li>
-	</ul>
-</p>
+<h2 id="assumptions">Assumptions before we begin:</h2>
+<ul>
+	<li>Chia is installed on a Linux machine and it is running the farmer (<em>this is important because if it is just a harvester then a lot of the Chia commands won't work</em>).</li>
+	<li>You are willing to setup Apache, MySQL, PHP, ssmtp, and code in both Bash and PHP.</li>
+	<li>To keep it as simple as possible, Apache, MySQL, and PHP will be set up on the one farmer server. You can set them up on different machines, this was my original method.</li>
+	<li>You are familiar with Terminal and some form of editor. Other than viewing the dashboard in a web browser, I pretty much do all the work in the Terminal. 
+	I use the editor <b>nano</b> but you can use anything you like, just replace <b>nano</b> with whatever tool you're using.</li>
+</ul>
 
 <hr> 
 
-<h3>Software packages we will use:</h3>
-
+<h2 id="used">Software packages we will use:</h2>
 <ul>
 	<li>curl</li>
 	<li>ssmtp</li>
@@ -114,7 +121,7 @@ some of the code.</P>
 	<li>mysql</li>
 </ul><hr>
 
-<h3>Software packages I found useful:</h3>
+<h2 id="useful">Software packages I found useful:</h2>
 <ul><li>glances</li>
 	<li>openssh</li>
 	<li>sharutils</li>
@@ -123,17 +130,9 @@ some of the code.</P>
 
 <hr>
 
-<blockquote>
-<h4><b>BrightTree</b> - <em>To make it easier to follow along we are going to name our dashboard "<b>brighttree</b>". You can change it to whatever you want but be sure to 
-replace any instances of "brighttree" in the code with your selected name.</em></h4>
-</blockquote>
-<hr>
-
-Let's begin...</br>
-
 </br>
 <hr>
-<h2>CREATE PROJECT FOLDER</h2>
+<h2 id="project">CREATE PROJECT FOLDER</h2>
 <hr>
 
 <p>I like to have a directory for source code in my user directory, and then directory under that for the dashboard code.</p>
@@ -158,10 +157,10 @@ sudo mkdir brighttree
 
 </br>
 <hr>
-<h2>INSTALLING SOFTWARE</h2>
+<h2 id="software">INSTALLING SOFTWARE</h2>
 <hr>
 
-<h3>Installing needed software packages</h3><p>You will need to provider you sudo password to complete these steps. And each one may take a few moments to install.</p>
+<h3 id="packages">Installing needed software packages</h3><p>You will need to provider you sudo password to complete these steps. And each one may take a few moments to install.</p>
 
 <code>
 <pre>
@@ -185,7 +184,7 @@ sudo apt install html2text
 
 <hr>
 
-<h3>Setting up <b>ssmtp</b> (using a Gmail account)</h3>
+<h3 id="ssmtp">Setting up <b>ssmtp</b> (using a Gmail account)</h3>
 
 <p>Since I have 2-factor authentication turned on for Gmail in order to get my Gmail account setup in ssmtp I had to setup an App Password. Below is a link to Google on 
 how to do that, but I also listed the steps out. You will need to securely save that App Password. I will use <em>APP_PASSWORD</em> as a placeholder in the code, 
@@ -219,7 +218,7 @@ sudo nano /etc/ssmtp/ssmtp.conf
 </pre>
 </code>
 
-<p>Change the **root** to your email address:</p>
+<p>Change the <b>root</b> to your email address:</p>
 
 <code>
 <pre>
@@ -227,7 +226,7 @@ root=username@gmail.com
 </pre>
 </code>
 
-<p>Change the **mailhub** to Gmail:</p>
+<p>Change the <b>mailhub</b> to Gmail:</p>
 
 <code>
 <pre>
@@ -265,7 +264,7 @@ printf "Subject: Testing SMTP Email\n\nThis is a test email." | /usr/sbin/ssmtp 
 
 <hr>
 
-<h3>Installing and Configuring Apache</h3>
+<h3 id="apache">Installing and Configuring Apache</h3>
 
 <p>Apache requires the most configuration, here is a link to Apache's <a href='https://ubuntu.com/tutorials/install-and-configure-apache#1-overview' target='_blank'>
 instructions</a>. I'm basically going to walk you through them.</p>
@@ -302,7 +301,6 @@ sudo nano index.php
 
 <p>Paste to enter the following code into the new 'index.php' file:</p>
 
-
 <code>
 <pre>
 &lt;?php
@@ -328,7 +326,7 @@ Hello BrightTree Builders!
 
 <hr>
 
-<h3>Set up the Virtual Host Configuration.</h3>
+<h3 id="virtualhost">Set up the Virtual Host Configuration.</h3>
 
 <p>Browse to the configuration directory:</p>
 
@@ -434,11 +432,11 @@ systemctl reload apache2
 </pre>
 </code>
 
-<p>Before we can load **http://192.168.1.135/** into a web browser and see our page we need to install PHP so Apache can translate our PHP code.</p>
+<p>Before we can load <b>http://192.168.1.135/</b> into a web browser and see our page we need to install PHP so Apache can translate our PHP code.</p>
 
 <hr>
 
-<h3>Installing PHP</h3>
+<h3 id="php">Installing PHP</h3>
 
 <p>You can run the two commands below to install PHP and then restart Apache so it sees the new PHP module.</p>
 
@@ -468,14 +466,11 @@ sudo systemctl restart apache2
 
 <img src="assets/HelloWorld.png" width="" height="" alt="" />
 
-</br>
-<hr>
-<h2>DATABASE SETUP</h2>
 <hr>
 
-<h3>Installing MySQL</h3>
+<h3 id="mysql">Installing MySQL</h3>
 
-<hr>
+<p>We will first do an update, then run the install for MySQL. We also will run the wizard to make a secure installation.</p>
 
 <code>
 <pre>
@@ -511,6 +506,13 @@ mysql&gt; exit
 
 </pre>
 </code>
+
+<hr>
+
+</br>
+<hr>
+<h2 id="database">DATABASE SETUP</h2>
+<hr>
 
 <p>Now let's create the database and a user &amp; password, then set permissions.</p>
 
@@ -571,7 +573,17 @@ mysql&gt; use brighttree;
 
 <hr>
 
-<h4>Create Servers table (at the *mysql&gt;* prompt).</h4>
+<h3 id="servers">Create Servers table</h3>
+
+<p>You will need to be a at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
+
+<code>
+<pre>
+sudo mysql
+</pre>
+</code>
+
+<p>And here is the SQL statement to create the servers table:</p>
 
 <code>
 <pre>
@@ -640,7 +652,16 @@ mysql&gt; describe servers;
 
 <hr>
 
-<h4>Create Dictionary table (at the *mysql&gt;* prompt).</h4>
+<h3 id="dictionary">Create Dictionary table</h3>
+<p>You will need to be a at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
+
+<code>
+<pre>
+sudo mysql
+</pre>
+</code>
+
+<p>And here is the SQL statement to create the servers table:</p>
 
 <code>
 <pre>
@@ -679,7 +700,17 @@ mysql&gt; describe dictionary;
 
 <hr>
 
-<h4>Create Actions table (at the *mysql&gt;* prompt).</h4>
+<h3 id="actions">Create Actions table</h3>
+
+<p>You will need to be a at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
+
+<code>
+<pre>
+sudo mysql
+</pre>
+</code>
+
+<p>And here is the SQL statement to create the servers table:</p>
 
 <code>
 <pre>
@@ -716,7 +747,6 @@ mysql&gt; describe actions;
 
 </pre>
 </code>
-
 
 <hr>
 
@@ -794,13 +824,22 @@ mysql&gt; exit
 
 </br>
 <hr>
-<h2>THE API</h2>
+<h2 id="webapi">THE WEB API</h2>
 <hr>
 
 <p>Our next steps will be building the API for the dashboard so we can make calls from Bash to update the db. I use the term API loosely because it is more of a list of 
 functions we use in the index page.</p>
 
-<h3>.htaccess file</h3>
+<h3 id="htaccess">.htaccess file</h3>
+
+</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
+	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
+		<div class='left'><p>You can download the full code <a href='source/.htaccess.txt' download='.htaccess'><b>.htaccess</b></a> or you can follow along and we'll build it as we go.</br>
+				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
+		<div class='right'>Skip to<br><a href='#dbconfig'>dbconfig.php file</a></div></p>
+</fieldset></div>
+</br>
 
 <p>First we are going to create the .htaccess file. We will create this in our main site folder:</p>
 
@@ -839,7 +878,16 @@ RewriteRule ^(.*)/(.*)/(.*)$ $1.php?req=&amp;name=
 
 <hr>
 
-<h3>dbconfig.php</h3>
+<h3 id="dbconfig">dbconfig.php</h3>
+
+</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
+	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
+		<div class='left'><p>You can download the full code <a href='source/dbconfig.php.txt' download='dbconfig.php'><b>dbconfig.php</b></a> or you can follow along and we'll build it as we go.</br>
+				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
+		<div class='right'>Skip to<br><a href='#api'>api.php file</a></div></p>
+</fieldset></div>
+</br>
 
 <code>
 <pre>
@@ -865,7 +913,7 @@ sudo nano dbconfig.php
 
 <hr>
 
-<h3>Testing PHP connection to MySQL</h3>
+<h3 id="testconnect">Testing PHP connection to MySQL</h3>
 
 <p>The next file it just to test that our connection is working. </p>
 
@@ -922,9 +970,20 @@ sudo rm server_list.php
 
 <hr>
 
-<h3>api.php file</h3>
+<h3 id="api">api.php file</h3>
 
-<p>Now we can build the PHP api file. If you aren't already in the site directory you'll need to change to that location. Then we will create a new file.</p>
+<p>Now we can build the PHP api file.</p>
+
+</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
+	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
+		<div class='left'><p>You can download the full code <a href='source/api.php.txt' download='api.php'><b>api.php</b></a> or you can follow along and we'll build it as we go.</br>
+				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
+		<div class='right'>Skip to<br><a href='#data'>data.php file</a></div></p>
+</fieldset></div>
+</br>
+
+<p>If you aren't already in the site directory you'll need to change to that location. Then we will create a new file.</p>
 
 <code>
 <pre>
@@ -939,10 +998,6 @@ cd /var/www/brighttree/public_html
 sudo nano api.php
 </pre>
 </code>
-
-<p><b>Choose your own Adventure:</b> you can download the full code <a href='LINK_HERE' target='_blank'><b>LINK_HERE</b></a> or you can follow along and we'll build it as we go. If you download the file and save 
-it to the */var/www/brighttree/public_html* folder, then you can skip down to the next Section titled "Build the Bash scripts".
-</p>
 
 <p>If your still here reading, then we'll start the code by adding in our php start and end tags, pull in the dbconfig file and set some variables GET parameters in 
 the URL.</p>
@@ -1364,9 +1419,19 @@ function response($status,$status_message,$data)
 
 <hr>
 
-<h3>data.php</h3>
+<h3 id="data">data.php</h3>
 
-<p>The rest of the needed api functions will be coded in the _data.php_ file and are for interactions with the database. I'm not going to explain each one because I 
+</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
+	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
+		<div class='left'><p>You can download the full code <a href='source/data.php.txt' download='data.php'><b>data.php</b></a> or you can follow along and we'll build it as we go.</br>
+				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
+		<div class='right'>Skip to<br><a href='#farmerbackend'>Build the</br>Farmer Backend</a></div></p>
+</fieldset></div>
+</br>
+
+
+<p>The rest of the needed api functions will be coded in the <em>data.php</em> file and are for interactions with the database. I'm not going to explain each one because I 
 think I named them pretty well and I hoping it is obvious what each does. So you can probably copy/paste the next big blob in to the file.</p>
 
 <p>First make sure you are in the site directory and let's create the file.</p>
@@ -1957,12 +2022,21 @@ function set_dictionary_value($name,$value)
 
 </br>
 <hr>
-<h2>Build the Bash scripts - Farmer</h2>
+<h2 id="farmerbackend">BUILD THE FARMER BASH BACKEND</h2>
 <hr>
 
-<h3>brighttree.web.sh</h3>
+<h3 id="brighttreeweb">brighttree.web.sh</h3>
 
 <p>brighttree.web.sh is the main Bash script that gathers data and uses curl to insert into the database.</p>
+
+</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
+	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
+		<div class='left'><p>You can download the full code <a href='source/brighttree.web.sh.txt' download='brighttree.web.sh'><b>brighttree.web.sh</b></a> or you can follow along and we'll build it as we go.</br>
+				If you download the file and save it to the <em>~/code/brighttree</em> folder (and update it with your edits),</br>then you can...</div>
+		<div class='right'>Skip to<br><a href='#runstat'>runstat.sh file</a></div></p>
+</fieldset></div>
+</br>
 
 <p>First make sure you are in the project folder.</p>
 
@@ -1972,10 +2046,6 @@ cd ~/code/brighttree
 
 </pre>
 </code>
-
-<p><b>Choose your own Adventure:</b> you can download the full code **LINK_HERE** or you can follow along and we'll build it as we go. If you download the file and save it 
-to the <em>~/code/brighttree</em> folder (and update it with your edits), then you can skip down to the next Section titled "Build the Bash scripts".
-</p>
 
 <p><b>NOTE:</b> This script is <em>highly</em> customized to my specific configuration, including number of drives, drive names, etc. You will need to make many adjustments for
  your specifc set up. One tool I use a lot that provides a lot of information 'at a glance' is the tool Glances. If you want to install glances:</p>
@@ -2093,7 +2163,6 @@ creating=`ps e -C "chia_plot" | grep -c "chia_plot"`
 echo "creating = $creating" &gt;&gt;~/code/brighttree/.brighttree.log
 curl -s http://192.168.1.135/api/setcreating/$1/$creating &gt;&gt;~/code/brighttree/.brighttree.log
 
-
 </pre>
 </code>
 
@@ -2116,7 +2185,6 @@ curl -s http://192.168.1.135/api/setcreating/$1/$creating &gt;&gt;~/code/brightt
 	transaction report. We will create the newtrx.sh script after we finish with this one.</li>
 </ul>
 
-
 <b><em>CODE BLOCK</em></b>
 
 <code>
@@ -2131,7 +2199,6 @@ if [ "$bal" != "$lastbal" ]; then
         curl -s http://192.168.1.135/brighttree/api/setwallet/wallet/$bal &gt;&gt;~/code/brighttree/.brighttree.log
         sh ~/code/brighttree/newtrx.sh
 fi
-
 
 </pre>
 </code>
@@ -2334,7 +2401,7 @@ filesystem I'd need and built up the command in the code block.</p>
 three differnt types into one result.</p>
 
 <p>The next block of code will check if there any actions added to the database that need to be performed. I don't use this code anymore since I've completely replotted 
-for NFT. The dashboard used to have columns/counts for each type of type, OG and NFT, and give a clickable button to be able to delete a single OG plot at a time. </p>
+for NFT. The dashboard used to have columns/counts for each type of type, OG and NFT, and give a clickable button to be able to delete a single OG plot at a time.</p>
 
 <p>This was how I kept my drive pretty much full while still plotting and removing old drives. It wasn't automated I had to watch it, but I have the dashboard open all 
 the time anyway. When the size got low enough, I used to display a warning in the dashboard and I would then click a button on the webpage to delete the oldest plot 
@@ -2343,7 +2410,6 @@ any other actions to perform beyond deleting old plots. Honestly, this is anothe
 
 <p>Also, since it is deleting plots on the drives, it is very specific to my set up. If you keep this code block in, you need to make adjustments for your drives and 
 plot locations.</p>
-
 
 <b><em>CODE BLOCK</em></b>
 
@@ -2442,7 +2508,9 @@ echo "" &gt;&gt;~/code/brighttree/.brighttree.log
 
 <hr>
 
-<h3>runstat.sh</h3>
+<h3 id="runstat">runstat.sh</h3>
+
+adventure
 
 <p>runstat.sh will get data from the current plotting job and put into the database. This script is designed around my specific plotting script (and my plots and 
 drives), if you have one that is different or you use a plot manager, you may not want this script at all. If that is the case, you should modify 
@@ -2572,7 +2640,7 @@ echo $out
 
 <hr>
 
-<h3>currentvalue.sh</h3>
+<h3 id="currentvalue">currentvalue.sh</h3>
 
 <p>currentvalue.sh will pull current values from the Space Pool API and put them into the database. You need to request a developer ID to be able to use their API, 
 which you can do in the Space Pool Discord. I will still give you all the code but replace my developer ID with the string <b>DEVELOPER_KEY</b>. The API call also 
@@ -2650,7 +2718,7 @@ echo "spacepool time to win = $sp_ttw" &gt;&gt;~/code/brighttree/.curval.log
 
 <hr>
 
-<h3>setplotscount.php</h3>
+<h3 id="setplotscount">setplotscount.php</h3>
 
 <p>setpltocount.php will parse the plotcount and plotsize for the farmer and each harvester from the Chia farm summary and put that into the database. I have 1 farmer 
 and 5 harvesters so there will be 6 servers set up in this file. You will need to adjust for your configuration. Also since all my servers start with a different 
@@ -2815,7 +2883,7 @@ function getPlotSize($line)
 
 <hr>
 
-<h3>plotreport.sh</h3>
+<h3 id="plotreport">plotreport.sh</h3>
 
 <p>plotreport.sh builds a list of drives and plots and puts into database. Again this script is built about my drives, so adjust for your configuration. Also the 
 <em>og</em> variable for the the OG plot locations. Even if you don't have any OG plots anymore, I'd still put a value into those variable... a valid location that 
@@ -2823,7 +2891,6 @@ doesn't contain any NFT plots either. Then the script will calculate 0 which is 
 built and added to the database is parse in the PHP code we wrote, so we need a least a '0' to get in there as a placeholder.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
-
 
 <code>
 <pre>
@@ -2970,14 +3037,13 @@ curl -s http://192.168.1.135/brighttree/api/setplotreport/jabba/$summary
 
 <hr>
 
-<h3>percent.sh</h3>
+<h3 id="percent">percent.sh</h3>
 
 <p>percent.sh uses the current plotting log to calculate a percent complete. It is ran from within the runstat.sh script, so if you didn't code that script because 
 you aren't using a plotting script or you are using a plot manager, then you won't need this script either. Also this version is specific to MadMax plotting, so 
 if you don't use MadMax you likely don't want this one either... or you'll need to do a major rewrite for a different plotter.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
-
 
 <code>
 <pre>
@@ -2988,7 +3054,6 @@ nano percent.sh
 </code>
 
 <p>Here is the file listing:</p>
-
 
 <code>
 <pre>
@@ -3093,7 +3158,7 @@ echo $per
 
 <hr>
 
-<h3>madmaxplot.sh</h3>
+<h3 id="madmaxplot.sh">madmaxplot.sh</h3>
 
 <p>madmaxplot.sh is my plotting script. I make changes to it before each run. I usually will change the value of the number option, the drive for the destination, and 
 the logfile at the end. I have a directory /home/steve/chialog where I will go before edit this script and run the 'touch' command to create a new empty log file.</p>
@@ -3135,7 +3200,7 @@ how it parses this file. I've just been too lazy to mess with it... mostly becau
 
 <hr>
 
-<h3>newtrx.sh</h3>
+<h3 id="newtrx">newtrx.sh</h3>
 
 <p>newtrx.sh will handle will grab the last five transactions from <em>'chia wallet get_transactions'</em> and put the result into a file. Then we loop through each line in 
 the file and identify each Transaction ID and check a history file to see if that Transaction ID is already in there. If it is not, then we run the <em>'chiatx.sh'</em> 
@@ -3188,12 +3253,12 @@ done &lt; ~/code/brighttree/.lastfivetrx
 
 <hr>
 
-<h3>chiatx.sh</h3>
+<h3 id="chiatx">chiatx.sh</h3>
 
 <p>chiatx.sh is called from newtrx.sh to handle transactions. The first parameter passed into the script is the Transaction ID identified in the <em>'newtrx.sh'</em> script. 
 That Transaction ID is used in the <em>'get_transaction'</em> Chia command to get more detail regarding the transaction. We also get the current XCH price from 
-<a href='https://coinmarketcap.com' target='_blank'>https://coinmarketcap.com</a>. We use all this transaction detail and the current price and build a new row to add to a CSV file that keeps a history of transaction. 
-We also send an email with that CSV file attached.</p>
+<a href='https://coinmarketcap.com' target='_blank'>https://coinmarketcap.com</a>. We use all this transaction detail and the current price and build a new row to add to a CSV 
+file that keeps a history of transaction. We also send an email with that CSV file attached.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
@@ -3325,10 +3390,10 @@ deactivate
 
 <hr>
 
-<h3>diskprice.sh</h3>
+<h3 id="diskprice">diskprice.sh</h3>
 
-<p>diskprice.sh is Bash script that scrapes the <a href='https://diskprice.com' target='_blank'>https://diskprice.com</a> website for the lowest priced 18 TB drive. We will display that in the dashboard. This script is 
-ran from a cronjob (we'll get to those as well) and the result is put into the database so our dashboard can pull in that data.</p>
+<p>diskprice.sh is Bash script that scrapes the <a href='https://diskprice.com' target='_blank'>https://diskprice.com</a> website for the lowest priced 18 TB drive. We will display 
+that in the dashboard. This script is ran from a cronjob (we'll get to those as well) and the result is put into the database so our dashboard can pull in that data.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
@@ -3361,7 +3426,7 @@ echo "Todays Best = $diskprice" &gt; ~/code/brighttree/.diskprice
 
 <hr>
 
-<h3>chiadaily.sh</h3>
+<h3 id="chiadaily">chiadaily.sh</h3>
 
 <p>chiadaily.sh creates a daily email report with a CSV file summarize plot counts and plot sizes. This script is ran from a cronjob also and the CSV we build is 
 emailed out as a daily report. This is specific to my configuration. You will need to adjust to your configuration. Be sure to change the email address to your 
@@ -3476,7 +3541,7 @@ deactivate
 
 <hr>
 
-<h3>brighttree.init.sh</h3>
+<h3 id="brighttreeinit">brighttree.init.sh</h3>
 
 <p>brighttree.init.sh is an initialization script. We will create it and then run it one time to create all the needed files.</p>
 
@@ -3550,7 +3615,7 @@ ls
 
 </br>
 <hr>
-<h2>Set up Bash scripts in Crontab - Farmer</h2>
+<h3 id="farmercron">Set up Bash scripts in Crontab</h3>
 <hr>
 
 <p>Now let's set up the scripts in crontab so they are run automatically for us.</p>
@@ -3591,10 +3656,10 @@ dashboard). Below, I'll describe each line.</p>
 
 </br>
 <hr>
-<h2>Build the Bash scripts - Harvester(s)</h2>
+<h2 id="harvesterbackend">BUILD THE HARVESTER BACKEND</h2>
 <hr>
 
-<p>If you don't have a harvester setup I wrote a blog on that also. <a href='https://www.blogger.com/blog/post/edit/2744915235706291607/5463527043338285782' 
+<p>If you don't have a harvester set up you don't need do this section, however I wrote a blog on setting up a harvester if you were interested. <a href='https://www.blogger.com/blog/post/edit/2744915235706291607/5463527043338285782' 
 target='_blank'>How to setup a Chia Harvester</a></p>
 
 <p>The basic structure of the harvester.web.sh file is the same as brighttree.web.sh with some of the code blocks removed since the harvester can run many Chia 
@@ -3770,7 +3835,7 @@ echo "" &gt;&gt;~/code/brighttree/.brighttree.log
 
 </br>
 <hr>
-<h2>Setup Bash scripts in Crontab - Harverter(s)</h2>
+<h3 id="harvestercron">Setup Bash scripts in Crontab</h3>
 <hr>
 
 <p>Now let's set up the scripts in crontab so they are run automatically for us.</p>
@@ -3802,17 +3867,16 @@ dashboard). Below, I'll describe each line.</p>
 
 </br>
 <hr>
-<h2>Code the Dashboard index.php file</h2>
+<h3 id="dashboard">THE DASHBOARD</h3
 <hr>
 
 <p>index.php is the actual dashboard php code. We created a sample index.php early on as a test, but we'll add everything to it now. The dashboard uses Bootstrap 
 and Google Fonts.</p>
  
-You can read more about Bootstrap <a href='https://bootstrap.com' target='_blank'>here</a>. And you can find more info on Google Fonts 
-<a href='https://fonts.google.com' target='_blank'>here</a>. Everything you need is already in the script we will add, those links are just for reference if you 
-want more info.
+More info on <a href='https://bootstrap.com' target='_blank'>Bootstrap</a>. More info on <a href='https://fonts.google.com' target='_blank'>Google Fonts</a>. 
+Everything you need is already in the script we will add, those links are just for reference if you want more info.
 
-<h3>index.php</h3>
+<h3 id="index">index.php</h3>
 
 <p>We will need to change back into our site directory first:</p>
 
@@ -3830,8 +3894,8 @@ nano index.php
 </pre>
 </code>
 
-<p><b>Choose your own Adventure:</b> you can download the full code <b><a href='LINK_HERE' target='_blank'>LINK_HERE</a></b> or you can follow along and we'll build it as we go. If you download the file and 
-save it to the <em>/var/www/brighttree/public_html</em> folder. And skip ahead to the Section <b>Does it work?</b></p>
+<p><b>Choose your own Adventure:</b> you can download the full code <b><a href='source/index.php.txt' download='index.php'>index.php</a></b> or you can follow along and we'll build 
+it as we go. If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder.</p>
 
 <p>If your still here reading, then we'll start the code by adding in our php start tag and pull in the data.php and dbconfig.php files.</p>
 
@@ -4009,7 +4073,7 @@ function build_page_body() {
 
 <p>The three <em>&lt;script&gt;</em> tags must be the last thing before the <em>&lt;/body&gt;</em> tag and they must be in that sequence for Bootstrap/jQuery to work right.</p>
 
-<p>The next block is the _build_page_bottom()_ function and it simply closes the html tag.</p>
+<p>The next block is the <em>build_page_bottom()</em> function and it simply closes the html tag.</p>
 
 <code>
 <pre>
@@ -4507,30 +4571,37 @@ function get_farmsummary() {
 
 <hr>
 
-<h3>lllllllllllllllllllllllllllllllllll END OF WALKTHROUGH lllllllllllllllllllllllllllllllllll</h3>
-
+<h1 id="theend">END OF WALKTHROUGH</h1>
 <hr>
 
-<h2>Known Bugs</h2>
-
+<h1 id="bugs">KNOWN BUGS</h1>
+	
 <p>I'm using this dashboard daily. It works, but there are issues that I have just been living with for the time being. I will list some of the more obvious ones.</p>
 
 <ul>
-	<li>The chiatx.csv historical file has started getting unwanted data due to scraping the price from the CoinMarketCap website. Originally it worked fine but at some point they changed the formating of their site and the scrap isn't handling that gracefully. Workaround - I've been manually editing the chiatx.csv file each day after it's updated. I usually know the approximate time I will have a new transaction since I'm in a pool and getting basically a payout every 24.5 hours. </li>
+	<li>The chiatx.csv historical file has started getting unwanted data due to scraping the price from the CoinMarketCap website. Originally it worked fine but at some point they changed 
+	the formating of their site and the scrap isn't handling that gracefully. Workaround - I've been manually editing the chiatx.csv file each day after it's updated. I usually know the 
+	approximate time I will have a new transaction since I'm in a pool and getting basically a payout every 24.5 hours. </li>
+	<li>chiadaily.sh script is prone to label servers with the wrong plot count after a Chia upgrade. The sequence of harvesters sometimes changes in the farm summary and the method
+	used to get the values is simply counting lines, not based on finding the correct IP address first.</li>
 </ul>
 
+<h1 id="realizations">REALIZATIONS</h1>
 
-<h2>Realizations</h2>
+<p>During putting this Walkthrough together, I looked at code that was written months ago. I see a lot of changes that could be made to improve and simplify the code. I will probably go 
+back and do a total rewrite of the application and clean up the code a lot. I'd like to pull all the servers/drives specific configuration into one config file that all the scripts could 
+access and keep from having to rewrite code. Just update the config with your servers/drives instead. Maybe even develop a way for the drive configuration to be built automatically by 
+scanning drives for *.plot files? Just think outloud here... </p>
 
-<p>During putting this Walkthrough together, I looked at code that was written months ago. I see a lot of changes that could be made to improve and simplify the code. I will probably go back and do a total rewrite of the application and clean up the code a lot. I'd like to pull all the servers/drives specific configuration into one config file that all the scripts could access and keep from having to rewrite code. Just update the config with your servers/drives instead. Maybe even develop a way for the drive configuration to be built automatically by scanning drives for *.plot files? Just think outloud here... </p>
+<h1 id="responsive">RESPONSIVE WEB DESIGN</h1>
 
-<h2>Responsive Web Design</h2>
+<p>I never mentioned it in the Walkthrough but we're using Bootstrap so you can view on a mobile device or tablet and it should still be readable. So you can look at the dashboard on your 
+phone while you're watching TV in the living room.</p>
 
-<p>I never mentioned it in the Walkthrough but the HTML/CSS was designed to be responsive and can be view on a mobile device and still look okay.</p>
+<h1 id="autostart">AUTO START FARMING AND HARVESTING PROCESSES</h1>
 
-<h2>Auto Start Farming and Harvesting Processes</h2>
-
-<p>I think I have setup on each server is an entry in crontab to immediate start the farmer/harvester back up at boot up. This keeps me from having to do it if the server is restarted for some reason.</p>
+<p>I think I have setup on each server is an entry in crontab to immediate start the farmer/harvester back up at boot up. This keeps me from having to do it if the server is restarted for 
+some reason.</p>
 
 <code>
 <pre>
@@ -4549,7 +4620,7 @@ function get_farmsummary() {
 </pre>
 </code>
 
-<h2>Installing other useful software packages</h2>
+<h1 id="installuseful">OTHER USEFUL SOFTWARE PACKAGES</h1>
 
 <p>If you want to also install the packages I founds useful, you can run the install commands below.</p>
 
@@ -4566,22 +4637,23 @@ sudo apt install screen
 </pre>
 </code>
 
-<h1>|||||||||||||||||||||| STILL NEED TODO ||||||||||||||||||||||</h1>
+<h1 id="todo">|||||||||||||||||||||| STILL NEED TODO ||||||||||||||||||||||</h1>
 <ul>
-<li>Find all the LINK_HERE instances and get the URLs to put into the walkthrough.</li>
-<li>Find good places for more images. I think images can help explain points better so if that are place that it makes sense, you will need to create some screen shots.</li>
-<li>Add The More You Know tips into the Walkthrough</li>
-<li>Choose Your Own Adventure</li>
-<li>Follow Along Technical Review</li>
-<li>PROOF READING</li>
-<li>Formating Review</li>
+	<li>Find good places for more images. I think images can help explain points better so if that are place that it makes sense, you will need to create some screen shots.</li>
+	<li>Add The More You Know tips into the Walkthrough</li>
+	<li>Choose Your Own Adventure</li>
+	<li>Follow Along Technical Review</li>
+	<li>PROOF READING</li>
+	<li>Formating Review</li>
 </ul>
 
 <hr>
 
-<h4>And we're done. I hope you had fun and find this useful.</h4>
-<p><em>Feedback is always welcome.</em> <img src="assets/signature.png" width="" height="" alt="Steve Stepp" /></p>
+<h2 id="done">And We Are Done</h2>
 
+<p>I hope you had fun and find this useful.</p>
+
+<p><em>Feedback is always welcome.</em> <img src="assets/signature.png" width="" height="" alt="Steve Stepp" /></p>
 
 <!-- |||||||||||||||||||||||||||||||||||||| END BLOG POST CONTENT |||||||||||||||||||||||||||||||||||||| -->
 
@@ -4596,8 +4668,87 @@ sudo apt install screen
                 <div class="card mb-4">
                     <div class="card-header">Disclaimer</div>
                     <div class="card-body">
-	                    <p>This is provided for fun. And free. No copyright. Do with it as you see fit. But use at your own risk.</p>
-					</div>
+	                    <p>This is provided for fun. And free. No copyright.</br>Do with it as you see fit. But use at your own risk.</p>
+					</div> <!-- card-body -->
+				</div> <!-- card mb-4 -->
+	                
+				<!-- Side widget -->
+				<div class="card mb-4">
+					<div class="card-header">Table of Contents</div>
+					<div class="card-body">
+<!-- Table of Contents -->
+<ul>
+	<li><a href="#title">Builing a Chia Dash Board on Linux - A Walkthrough</a>
+		<ul>
+			<li><a href="#brighttree">BrightTree Name</a></li>
+			<li><a href="#assumptions">Assumptions</a></li>
+			<li><a href="#used">Software We Use</a></li>
+			<li><a href="#useful">Other Useful Software</a></li>
+			<li><a href="#project">CREATE PROJECT FOLDER</a></li>
+			<li><a href="#software">INSTALLING SOFTWARE</a>
+				<ul>
+					<li><a href="#packages">Installing needed software packages</a></li>
+					<li><a href="#ssmtp">Setting up ssmtp (using a Gmail account)</a></li>
+					<li><a href="#apache">Installing and Configuring Apache</a></li>
+					<li><a href="#virtualhost">Installing PHP</a></li>
+					<li><a href="#php">Installing PHP</a></li>
+					<li><a href="#mysql">Installing MySQL</a></li>
+				</ul>
+			</li>
+			<li><a href="#database">DATABASE SETUP</a>
+				<ul>
+					<li><a href="#servers">Create servers table</a></li>
+					<li><a href="#dictionary">Create dictionary table</a></li>
+					<li><a href="#actions">Create actions table</a></li>
+				</ul>
+			</li>
+			<li><a href="#webapi">BUILD A WEB API</a>
+				<ul>
+					<li><a href="#htaccess">.htaccess file</a></li>
+					<li><a href="#dbconfig">dbconfig.php</a></li>
+					<li><a href="#testconnect">Testing PHP connection to MySQL</a></li>
+					<li><a href="#api">api.php file</a></li>
+					<li><a href="#data">data.php file</a></li>
+				</ul>
+			</li>
+			<li><a href="#farmerbackend">BUILD THE FARMER BASH BACKEND</a>
+				<ul>
+				<li><a href="#brighttreeweb">brighttree.web.sh file</a></li>
+					<li><a href="#runstat">runstat.sh file</a></li>
+					<li><a href="#currentvalue">currentvalue.sh file</a></li>
+					<li><a href="#setplotscount">setplotscount.php file</a></li>
+					<li><a href="#plotreport">plotreport.sh file</a></li>
+					<li><a href="#percent">percent.sh file</a></li>
+					<li><a href="#madmaxplot">madmaxplot.sh file</a></li>
+					<li><a href="#newtrx">newtrx.sh file</a></li>
+					<li><a href="#chiatx">chiatx.sh file</a></li>
+					<li><a href="#diskprice">diskprice.sh file</a></li>
+					<li><a href="#chiadaily">chiadaily.sh file</a></li>
+					<li><a href="#brighttreeinit">brighttree.init.sh file</a></li>
+					<li><a href="#farmercron">Set up farmer Bash scripts in Crontab</a></li>
+				</ul>
+			</li>
+			<li><a href="#harvesterbackend">BUILD THE HARVESTER BASH BACKEND</a>
+				<ul>
+					<li><a href="#harvesterweb">harvester.web.sh file</a></li>
+					<li><a href="#harvestercron">Set up harvester Bash scripts in Crontab</a></li>
+				</ul>
+			</li>
+			<li><a href="#dashboard">THE DASHBOARD</a>
+				<ul><li><a href="#index">index.php</a></li></ul>
+			</li>
+			</ul>
+	</li>
+	<li><a href="#theend">END OF WALKTHROUGH</a></li>
+	<li><a href="#bugs">KNOWN BUGS</a></li>
+	<li><a href="#realizations">REALIZATIONS</a></li>
+	<li><a href="#responsive">RESPONSIVE DESIGN</a></li>
+	<li><a href="#autostart">AUTO START FARMING AND HARVESTING PROCESSES</a></li>
+	<li><a href="#installuseful">INSTALLING OTHER USEFUL SOFTWARE PACKAGES</a></li>
+	<li><a href="#todo">STILL NEED TODO</a></li>
+	<li><a href="#done">And We Are Done</a></li>
+</ul>
+					</div><!-- card-body -->
 				</div> <!-- card mb-4 -->
 
                     <!-- Side widget-->
@@ -4623,7 +4774,7 @@ sudo apt install screen
         </div>
         <!-- Footer-->
         <footer class="py-2 bg-dark">
-            <div class="container"><p class="m-0 text-center text-warning roboto">Copyright &copy; OWEN$BORO ¢rypto 2021</p></div>
+            <div class="container"><p class="m-0 text-center text-warning roboto">Copyright &copy; Steven R. Stepp 2021</p></div>
         </footer>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
