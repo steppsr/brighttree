@@ -1,0 +1,4 @@
+
+#!/bin/bash
+screen -d -m -S c1 bash -c 'cd /home/user/chia-blockchain && . ./activate && ~/madmax/chia-plotter/build/chia_plot -t /mnt/ssd-ta/ -2 /mnt/ssd-ta/ -d /mnt/hdd-01/spacepool/ -n 7 -c POOL_CONTRACT_ADDRESS -f FARMER_PUBLIC_KEY -r 15 |tee /home/steve/chialogs/chia44.log'
+

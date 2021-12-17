@@ -1,0 +1,5 @@
+
+#!/bin/bash
+page=`curl -s https://diskprices.com/?locale=us&condition=new,used&capacity=18-&disk_types=external_hdd,external_hdd25,internal_hdd,internal_hdd25,internal_sshd,internal_sas,external_ssd,internal_ssd,m2_ssd,m2_nvme,u2`
+diskprice=`echo $page | html2text | grep "18 TB" | grep "HDD" | head -n 1 | tr '/$' '@' | tr ' ' ',' | cut -c1-150`
+curl -s http://192.168.1.135/api/setdiskprice/diskprice/"$diskprice" > ~/code/brighttree/.diskprice

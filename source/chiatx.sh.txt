@@ -1,0 +1,112 @@
+
+#!/bin/bash
+
+# Expects one paramater - Chia transaction ID. Exit if the paramater is empty
+id=$1
+if [ -z "$id" ]; then
+	echo "Transaction ID is missing"
+	exit 1
+fi
+
+# start python virtual environment for Chia
+cd ~/chia-blockchain
+. ./activate
+
+json=`chia wallet get_transaction -v -tx $id`
+
+name=$(echo "$json" | grep "name" | cut --fields 4 --delimiter=\' )
+
+mojo=$(echo "$json" | grep " 'amount" | grep -v "additions" | grep -v "fee_amount" | cut --fields 2 --delimiter=: | xargs)
+mojo=${mojo%?}
+
+confirmed=$(echo "$json" | grep "confirmed" | grep -v "confirmed_at_height" | cut --fields 2 --delimiter=: | xargs)
+confirmed=${confirmed%?}
+
+confirmed_at_height=$(echo "$json" | grep "confirmed_at_height" | cut --fields 2 --delimiter=: | xargs)
+confirmed_at_height=${confirmed_at_height%?}
+
+created_at_time=$(echo "$json" | grep "created_at_time" | cut --fields 2 --delimiter=: | xargs)
+created_at_time=${created_at_time%?}
+
+fee_amount=$(echo "$json" | grep "fee_amount" | cut --fields 2 --delimiter=: | xargs)
+fee_amount=${fee_amount%?}
+
+sent=$(echo "$json" | grep "sent" | grep -v "sent_to" |  cut --fields 2 --delimiter=: | xargs)
+sent=${sent%?}
+
+to_puzzle_hash=$(echo "$json" | grep "to_puzzle_hash" | cut --fields 2 --delimiter=: | xargs)
+to_puzzle_hash=${to_puzzle_hash%?}
+
+trade_id=$(echo "$json" | grep "trade_id" | cut --fields 2 --delimiter=: | xargs)
+trade_id=${trade_id%?}
+
+type=$(echo "$json" | grep "type" | cut --fields 2 --delimiter=: | xargs)
+type=${type%?}
+
+case $type in
+	0)
+		typedesc="INCOMING_TX"
+		;;
+
+	1)
+		typedesc="OUTGOING_TX"
+		;;
+
+	2)
+		typedesc="COINBASE_REWARD"
+		;;
+
+	3)
+		typedesc="FEE_REWARD"
+		;;
+
+	4)
+		typedesc="INCOMING_TRADE"
+		;;
+
+	5)
+		typedesc="OUTGOING_TRADE"
+		;;
+esac
+
+wallet_id=$(echo "$json" | grep "wallet_id" | cut --fields 2 --delimiter=: | xargs)
+wallet_id=${wallet_id%?}
+
+today=$(date +"%Y-%m-%d %T")
+transday=$(date --date=@$created_at_time +"%Y-%m-%d %T")
+
+walletshow=`chia wallet show`
+txch=$(echo "$walletshow" | grep "Total Balance" | cut --fields 6 --delimiter=\  | head -n 1)
+tmojo=$(echo "$walletshow" | grep "Total Balance" | cut --fields 8 --delimiter=\ | cut --fields 2 --delimiter=\( | head -n 1)
+pxch=$(echo "$walletshow" | grep "Pending Total Balance" | cut --fields 7 --delimiter=\ | head -n 1)
+pmojo=$(echo "$walletshow" | grep "Pending Total Balance" | cut --fields 9 --delimiter=\ | cut --fields 2 --delimiter=\( | head -n 1)
+sxch=$(echo "$walletshow" | grep "Spendable" | cut --fields 5 --delimiter=\ | head -n 1)
+smojo=$(echo "$walletshow" | grep "Spendable" | cut --fields 7 --delimiter=\ | cut --fields 2 --delimiter=\( | head -n 1)
+
+# cant do floating division in Bash but we know xch is always mojo/10000000000 so we can use string manipulation to build the xch value from mojo
+mojolength=`expr length $mojo`
+if [ $mojolength -eq 12 ]; then
+	xch="0.$mojo"
+elif [ $mojolength -lt 12 ]; then
+	temp=`printf "%012d" $mojo`
+	xch="0.$temp"
+else
+	off=$(($mojolength - 12))
+	off2=$(($off + 1))
+	temp1=`echo $mojo | cut -c1-$off`
+	temp2=`echo $mojo | cut -c$off2-$mojolength`
+	xch="$temp1.$temp2"
+fi
+
+content=`curl -s https://coinmarketcap.com/currencies/chia-network/`
+curusd=`echo $content | cut -d '$' -f 6`
+curusd=`echo $curusd | cut -d '<' -f 1`
+
+
+csv="chiatx.csv"
+echo "\"$transday\",\"$name\",$xch,$mojo,$curusd,\"$typedesc\",$txch,$tmojo,$pxch,$pmojo,$sxch,$smojo,$wallet_id,\"$confirmed\",$confirmed_at_height,$created_at_time,$fee_amount,$sent,\"$to_puzzle_hash\",\"$trade_id\""  >>~/code/brighttree/$csv
+printf "Chia Transaction Report at $today" | mpack -a -s "Chia Transaction Report at $today" ~/code/brighttree/chiatx.csv username@gmail.com
+
+# stop python virtual environment for Chia
+deactivate
+

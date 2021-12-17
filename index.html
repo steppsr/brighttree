@@ -14,21 +14,40 @@
         <style>
 			@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;900&display=swap');
 			@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;900&display=swap');
+			code { display: block; background-color: #212529; color: #00FF00;  padding: 1em 0.5em 0em 1em; }
+			pre { background-color: #212529; color: #00FF00; display: block; font-family: monospace; white-space: pre;  }
+			blockquote { padding: 25px; }
 			.passion { font-family: 'Passion One', cursive; letter-spacing: 0.3em; }
 			.roboto { font-family: 'Roboto Slab', serif; letter-spacing: 0.3em; }
-			code { display: block; }
-			pre { background-color: #212529; color: #00FF00; display: block; font-family: monospace; white-space: pre; margin: 1em 2em; padding: 1em 1em; }
-			blockquote { padding: 25px; }
-			.moreyouknow { border:1px solid black; padding:12px; line-height:16px; margin-top:15px; }
-			.adventure { border:1px solid black; padding-left:12px; padding-right:12px; line-height:16px; margin-top:0px; padding-bottom:5px; }
-			.attribution { font-size: 0.7rem; float:right; }
+			.moreyouknow { border:1px solid black; padding:12px 12px 0px 12px; line-height:16px; margin-top:15px; }
+			.moreyouknow p { padding-top: 6px; line-height:21px; }
+			.adventure { border:1px solid black; padding:12px 12px 0px 12px; line-height:16px; margin-top:0px; }
+			.attribution { font-size: 0.7rem; }
 			.donate { padding-top:15px; padding-left:30px; line-height:15px; }
 			.donatetable tr,th,td { padding:10px; }
 			.donate-address-label { font-size:1.0rem; }
 			.donate-address-value { font-size:0.70rem; }
-			.right { float:right; border: 1px solid #dee2e6; padding:5px; }
+			.right { text-align:right; float:right; border: 1px solid #dee2e6; padding:5px; }
 			.left { float:left; }
+			.treehouse {float:left; margin-right: 15px; }
+			.brighttreetitle { margin-left:79px; }
+			.skip { margin-left: 5px; }
+			.copybutton { float:right; margin-left: 4px; background: url('assets/copy.png') no-repeat; width:30px; height:24px; border:none; }
+			.symbol { font-size:1.45rem; padding-left: 4px; padding-right: 4px; }
+			.sidebaricon { float:right; }
+			.mono { font-family: 'Courier New';}
+			.nano { background-color: #adb5bd; padding-left:5px; padding-right:5px; padding-bottom:1px; margin-bottom:3px; }
+			#done { text-align:center; }
+			.goodbye { text-align:center; }
+			.harvesterfiles { display:inline-block; padding: 15px; }
+			figcaption { font-size:10px; }
         </style>
+        <script>
+			function copycode(id) {
+				var copyText = document.getElementById(id).getElementsByTagName('pre')[0];
+				navigator.clipboard.writeText(copyText.innerText);
+			}
+        </script>
     </head>
     <body>
         <!-- Responsive navbar-->
@@ -69,26 +88,33 @@
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">BrightTree</a>
                         </header>
                         <!-- Preview image figure-->
-                        <figure class="mb-4"><img class="img-fluid rounded" src="assets/dashboard_screenshot.png" alt="Screenshot of Dashboard" /></figure>
+                        <figure class="mb-4">
+	                        <img class="img-fluid rounded" src="assets/dashboard_screenshot.png" alt="Screenshot of Dashboard" />
+							<figcaption>Right-click and launch image in new tab for full screen.</figcaption>
+                        </figure>
                         <!-- Post content-->
                         <section class="mb-5">
 
 <!-- ||||||||||||||||||||||||||||| START OF BLOG POST CONTENT ||||||||||||||||||||||||||||| -->
 
 <blockquote>
-<h2 id="brighttree"><b>BrightTree</b></h2>
-<p><em>To make it easier to follow along we are going to name our dashboard "<b>brighttree</b>". You can change it to whatever you want but be sure to 
-replace any instances of "brighttree" in the code with your selected name.</em></p>
+<div>
+	<div class='treehouse'><img src="assets/treehouse.png" width="" height="" alt="" /></div>
+	<div class='brighttreetitle'>
+		<h2 id="brighttree"><b>BrightTree</b></h2>
+		<p><em>To make it easier to follow along we are going to name our dashboard "<b>brighttree</b>". Feel free to change it to whatever you want but be sure 
+		to replace any instances of "brighttree" in the code with your name.</em></p>
+	</div>
 </blockquote>
 <hr>
 
-<p>I got started with Chia back in early April 2020. While I was familar with Linux, I wasn't a daily user and didn't know Bash that well. Over the months since then, 
+<p>I got started with Chia back in early April 2020. While I was familiar with Linux, I wasn't a daily user and didn't know Bash that well. Over the months since then, 
 I have slowly put together a series of Bash scripts that are basically the backend for a PHP dashboard application for Chia. This post will walk through the steps to build 
-your own on Linux from scratch.</p>
+your own dashboard on Linux from scratch.</p>
 
-<p><b>Note</b>: I built this dashbaord for my farm and as a learning experience for Linux and Bash. All my plots are in one NFT and I am in 
+<p><b>Note</b>: I built this dashboard for my farm and as a learning experience for Linux and Bash. All my plots are in one NFT and I am in 
 <a href='https://pool.space' target='_blank'>Space Pool</a>. I am also co-farming the fork <a href='https://hddcoin.org' target='_blank'>HHDcoin</a>. You may need to make 
-adjust for your configuration.</p>
+adjustments for your configuration.</p>
 
 <p><b>Warning</b>: This Walkthrough is long. Very long. But I think it is fun; hopefully you will too. Even if you do not build the dashboard, you may find it interesting to browse 
 some of the code.</p>
@@ -98,7 +124,7 @@ some of the code.</p>
 <h2 id="assumptions">Assumptions before we begin:</h2>
 <ul>
 	<li>Chia is installed on a Linux machine and it is running the farmer (<em>this is important because if it is just a harvester then a lot of the Chia commands won't work</em>).</li>
-	<li>You are willing to setup Apache, MySQL, PHP, ssmtp, and code in both Bash and PHP.</li>
+	<li>You are willing to set up Apache, MySQL, PHP, ssmtp, and code in both Bash and PHP.</li>
 	<li>To keep it as simple as possible, Apache, MySQL, and PHP will be set up on the one farmer server. You can set them up on different machines, this was my original method.</li>
 	<li>You are familiar with Terminal and some form of editor. Other than viewing the dashboard in a web browser, I pretty much do all the work in the Terminal. 
 	I use the editor <b>nano</b> but you can use anything you like, just replace <b>nano</b> with whatever tool you're using.</li>
@@ -132,37 +158,44 @@ some of the code.</p>
 
 </br>
 <hr>
-<h2 id="project">CREATE PROJECT FOLDER</h2>
+<h2 id="project">CREATE PROJECT DIRECTORY <img src="assets/directory.png" width="" height="" alt="" />
+ </h2>
 <hr>
 
-<p>I like to have a directory for source code in my user directory, and then directory under that for the dashboard code.</p>
+<p>I like to have a directory for source code in my user directory, and then a directory under that for the dashboard code.</p>
 
 <p>Let's create a directory for the source code.</p>
 
-<code>
+<code id='codebox-001' >
+<button class='copybutton' onclick="copycode('codebox-001')" title='Copy to clipboard'></button>
 <pre>
 cd ~
 
 sudo mkdir code
+
 </pre>
 </code>
 <p>And now the dashboard directory.</p>
-<code>
+<code id='codebox-002' >
+<button class='copybutton' onclick="copycode('codebox-002')" title='Copy to clipboard'></button>
 <pre>
 cd code
 
 sudo mkdir brighttree
+
 </pre>
 </code>
 
 </br>
 <hr>
-<h2 id="software">INSTALLING SOFTWARE</h2>
+<h2 id="software">INSTALLING SOFTWARE <img src="assets/software.png" width="" height="" alt="" />
+ </h2>
 <hr>
 
-<h3 id="packages">Installing needed software packages</h3><p>You will need to provider you sudo password to complete these steps. And each one may take a few moments to install.</p>
+<h3 id="packages">Installing needed software packages</h3><p>You will need to provide your sudo password to complete these steps. And each one may take a few moments to install.</p>
 
-<code>
+<code id='codebox-003' >
+<button class='copybutton' onclick="copycode('codebox-003')" title='Copy to clipboard'></button>
 <pre>
 sudo apt install curl
 
@@ -179,6 +212,7 @@ sudo apt install xargs
 sudo apt install tr
 
 sudo apt install html2text
+
 </pre>
 </code>
 
@@ -186,7 +220,7 @@ sudo apt install html2text
 
 <h3 id="ssmtp">Setting up <b>ssmtp</b> (using a Gmail account)</h3>
 
-<p>Since I have 2-factor authentication turned on for Gmail in order to get my Gmail account setup in ssmtp I had to setup an App Password. Below is a link to Google on 
+<p>Since I have 2-factor authentication turned on for Gmail in order to get my Gmail account set up in ssmtp I had to set up an App Password. Below is a link to Google on 
 how to do that, but I also listed the steps out. You will need to securely save that App Password. I will use <em>APP_PASSWORD</em> as a placeholder in the code, 
 you need to replace that with your actual App Password.</p>
 
@@ -205,58 +239,57 @@ you need to replace that with your actual App Password.</p>
         <li>Your account is through work, school, or other organization.</li>
         <li>You turned on Advanced Protection.</li>
     </ul>
-<li>At the bottom, choose Select app and choose the app you using and then Select device and choose the device you’re using and then Generate.</li>
+<li>At the bottom, choose Select app and choose the app you are using and then Select device and choose the device you’re using and then Generate.</li>
 <li>Follow the instructions to enter the App Password. The App Password is the 16-character code in the yellow bar on your device.</li>
 <li>Tap Done.</li>
 </ol>
 
 <p>Now let's exit the ssmtp configuration file and add your Gmail details:</p>
 
-<code>
+<code id='codebox-004' >
+<button class='copybutton' onclick="copycode('codebox-004')" title='Copy to clipboard'></button>
 <pre>
 sudo nano /etc/ssmtp/ssmtp.conf
+
 </pre>
 </code>
 
-<p>Change the <b>root</b> to your email address:</p>
+<p>Change the <b>root</b> to your email address, change the <b>mailhub</b> to Gmail, and change the <b>hostname</b> to your computer (I'm using jabba because that is my farming
+rig's name).</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-005' >
+<button class='copybutton' onclick="copycode('codebox-005')" title='Copy to clipboard'></button>
 <pre>
 root=username@gmail.com
-</pre>
-</code>
-
-<p>Change the <b>mailhub</b> to Gmail:</p>
-
-<code>
-<pre>
 mailhub=smtp.gmail.com:465
-</pre>
-</code>
-
-<p>Change the **hostname** to your computer (I'm using jabba because that is my farmering rigs name):</p>
-
-<code>
-<pre>
 hostname=jabba
+
 </pre>
 </code>
+</div>
 
-<p>Finally, add the bottom of the configuration file, add the following lines:</p>
+<p>Finally, at the bottom of the configuration file, add the following lines. Be sure to update the <p>AuthPass</p> with your App Password from Google.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-008' >
+<button class='copybutton' onclick="copycode('codebox-008')" title='Copy to clipboard'></button>
 <pre>
 AuthUser=username@gmail.com
 AuthPass=&lt;app_password&gt;
 UseTLS=YES
+
 </pre>
 </code>
+</div>
 
-<p>Let's send a test email a make sure it works. Replace <em>username@gmail.com</em> with your email address.</p>
+<p>Let's send a test email and make sure it works. Replace <em>username@gmail.com</em> with your email address.</p>
 
-<code>
+<code id='codebox-009' >
+<button class='copybutton' onclick="copycode('codebox-009')" title='Copy to clipboard'></button>
 <pre>
 printf "Subject: Testing SMTP Email\n\nThis is a test email." | /usr/sbin/ssmtp username@gmail.com
+
 </pre>
 </code>
 
@@ -269,17 +302,20 @@ printf "Subject: Testing SMTP Email\n\nThis is a test email." | /usr/sbin/ssmtp 
 <p>Apache requires the most configuration, here is a link to Apache's <a href='https://ubuntu.com/tutorials/install-and-configure-apache#1-overview' target='_blank'>
 instructions</a>. I'm basically going to walk you through them.</p>
 
-<code>
+<code id='codebox-010' >
+<button class='copybutton' onclick="copycode('codebox-010')" title='Copy to clipboard'></button>
 <pre>
 sudo apt update
 
 sudo apt install apache2
+
 </pre>
 </code>
 
 <p>Now to create a site for BrightTree. First we'll create a new directory for our site in /var/www/ and then a public_html directory under that.</p>
 
-<code>
+<code id='codebox-011' >
+<button class='copybutton' onclick="copycode('codebox-011')" title='Copy to clipboard'></button>
 <pre>
 sudo mkdir /var/www/brighttree/
 
@@ -288,20 +324,37 @@ cd /var/www/brighttree/
 sudo mkdir public_html
 
 cd public_html
+
+</pre>
+</code>
+
+<p>Next we'll set some permissions and ownership of our directory. Be sure to update the username to your username.</p>
+
+<code id='codebox-134' >
+<button class='copybutton' onclick="copycode('codebox-134')" title='Copy to clipboard'></button>
+<pre>
+sudo chmod -R 775 /var/www/brighttree
+
+sudo chown -R username:username /var/www/brighttree
+
 </pre>
 </code>
 
 <p>Let's create our first page for the site.</p>
 
-<code>
+<code id='codebox-012' >
+<button class='copybutton' onclick="copycode('codebox-012')" title='Copy to clipboard'></button>
 <pre>
 sudo nano index.php
+
 </pre>
 </code>
 
 <p>Paste to enter the following code into the new 'index.php' file:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-013' >
+<button class='copybutton' onclick="copycode('codebox-013')" title='Copy to clipboard'></button>
 <pre>
 &lt;?php
 // BrightTree Dashboard
@@ -319,8 +372,10 @@ sudo nano index.php
 Hello BrightTree Builders!
 &lt;/body&gt;
 &lt;/html&gt;
+
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
@@ -330,77 +385,80 @@ Hello BrightTree Builders!
 
 <p>Browse to the configuration directory:</p>
 
-<code>
+<code id='codebox-014' >
+<button class='copybutton' onclick="copycode('codebox-014')" title='Copy to clipboard'></button>
 <pre>
 cd /etc/apache2/sites-available/
+
 </pre>
 </code>
 
 <p>Let's make a copy of the default to use for our site:</p>
 
-<code>
+<code id='codebox-015' >
+<button class='copybutton' onclick="copycode('codebox-015')" title='Copy to clipboard'></button>
 <pre>
 sudo cp 000-default.conf brighttree.conf
+
 </pre>
 </code>
 
 <p>Before we continue on, we are going to need your IP Address. If you need to find out your IP Address you can run the following command:</p>
 
-<code>
+<code id='codebox-016' >
+<button class='copybutton' onclick="copycode('codebox-016')" title='Copy to clipboard'></button>
 <pre>
 hostname -I
+
 </pre>
 </code>
 
 <p>The IP address should be the first set of numbers. Make note of it, we'll use that in a minute.</p>
 
-<img src="assets/FindIPAddress.png" width="" height="" alt="" />
+<p><img src="assets/FindIPAddress.png" width="" height="" alt="" /></p>
 
 <p>And now we can edit the file:</p>
 
-<code>
+<code id='codebox-017' >
+<button class='copybutton' onclick="copycode('codebox-017')" title='Copy to clipboard'></button>
 <pre>
 sudo nano brighttree.conf
+
 </pre>
 </code>
 
-<p>Update ServerAdmin with your email address so Apache can email you errors if they occur:</p>
+<p>Update <b>ServerAdmin</b> with your email address so Apache can email you errors if they occur, change the <b>DocumentRoot</b> to our directory for the site.
+Since this dashboard is designed to be run on your own local network we are just going to enter the IP Address of this machine as the <b>ServerName</b>.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-018' >
+<button class='copybutton' onclick="copycode('codebox-018')" title='Copy to clipboard'></button>
 <pre>
 ServerAdmin username@gmail.com
-</pre>
-</code>
-
-<p>Change the DocumentRoot to our directory for the site.</p>
-
-<code>
-<pre>
 DocumentRoot /var/www/brighttree/
-</pre>
-</code>
-
-<p>Since this dashboard is designed to be ran on your own local network we are just going to enter the IP Address of this machine as the <b>ServerName</b>.</p>
-
-<code>
-<pre>
 ServerName 192.168.1.135
+
 </pre>
 </code>
+</div>
 
 <p>Update both the ErrorLog and CustomLog entries and put 'brighttree' into the file names:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-021' >
+<button class='copybutton' onclick="copycode('codebox-021')" title='Copy to clipboard'></button>
 <pre>
 ErrorLog ${APACHE_LOG_DIR}/brighttree-error.log
 CustomLog ${APACHE_LOG_DIR}/brighttree-access.log combined
 
 </pre>
 </code>
+</div>
 
 <p>So you should have something looking like this (ignoring the comments):</p>
 
-<code>
+<code id='codebox-022' >
+<button class='copybutton' onclick="copycode('codebox-022')" title='Copy to clipboard'></button>
 <pre>
 &lt;VirtualHost *:80&gt;
     ServerAdmin username@gmail.com
@@ -418,17 +476,21 @@ CustomLog ${APACHE_LOG_DIR}/brighttree-access.log combined
 
 <p>Now we are ready to activate our site. </p>
 
-<code>
+<code id='codebox-023' >
+<button class='copybutton' onclick="copycode('codebox-023')" title='Copy to clipboard'></button>
 <pre>
 sudo a2ensite brighttree.conf
+
 </pre>
 </code>
 
-<p>Finally we need to reload Apache to put our changes into affect.</p>
+<p>Finally we need to reload Apache to put our changes into effect.</p>
 
-<code>
+<code id='codebox-024' >
+<button class='copybutton' onclick="copycode('codebox-024')" title='Copy to clipboard'></button>
 <pre>
 systemctl reload apache2
+
 </pre>
 </code>
 
@@ -440,25 +502,51 @@ systemctl reload apache2
 
 <p>You can run the two commands below to install PHP and then restart Apache so it sees the new PHP module.</p>
 
-<code>
+<code id='codebox-025' >
+<button class='copybutton' onclick="copycode('codebox-025')" title='Copy to clipboard'></button>
 <pre>
 sudo apt install php libapache2-mod-php
+
 </pre>
 </code>
 
 <p>And we need to load some extension for MySQL and PDO:</p>
 
-<code>
+<code id='codebox-026' >
+<button class='copybutton' onclick="copycode('codebox-026')" title='Copy to clipboard'></button>
 <pre>
 sudo apt install php7.4-mysql
+
 </pre>
 </code>
 
 <p>And then a restart</p>
 
-<code>
+<code id='codebox-027' >
+<button class='copybutton' onclick="copycode('codebox-027')" title='Copy to clipboard'></button>
 <pre>
 sudo systemctl restart apache2
+
+</pre>
+</code>
+
+<!-- Now we need to add in some apache modules for php. php-curl, mod_rewrite -->
+
+<p>Now we need to add a couple of modules in for Apache/PHP.</p>
+
+
+<code>
+<pre>
+sudo apt install libapache2-mod-php php-curl
+
+sudo service apache2 restart
+
+sudo a2enmod
+
+rewrite
+
+systemctl restart apache
+
 </pre>
 </code>
 
@@ -472,7 +560,8 @@ sudo systemctl restart apache2
 
 <p>We will first do an update, then run the install for MySQL. We also will run the wizard to make a secure installation.</p>
 
-<code>
+<code id='codebox-028' >
+<button class='copybutton' onclick="copycode('codebox-028')" title='Copy to clipboard'></button>
 <pre>
 sudo apt update
 
@@ -485,7 +574,8 @@ sudo mysql_secure_installation
 
 <p>The security wizard will run. I chose "Yes" to set up a password, and require strong validation (option 2). The rest of the questions I answered "Yes".</p>
 
-<code>
+<code id='codebox-029' >
+<button class='copybutton' onclick="copycode('codebox-029')" title='Copy to clipboard'></button>
 <pre>
 Remove anonymous users? (Press y|Y for Yes, any other key for No): y
 
@@ -498,7 +588,8 @@ Remove test database and access to it? (Press y|Y for Yes, any other key for No)
 
 <p>Now to test we can launch **mysql** (and then exit)</p>
 
-<code>
+<code id='codebox-030' >
+<button class='copybutton' onclick="copycode('codebox-030')" title='Copy to clipboard'></button>
 <pre>
 sudo mysql
 
@@ -511,14 +602,16 @@ mysql&gt; exit
 
 </br>
 <hr>
-<h2 id="database">DATABASE SETUP</h2>
+<h2 id="database">DATABASE SETUP <img src="assets/database.png" width="" height="" alt="" />
+ </h2>
 <hr>
 
-<p>Now let's create the database and a user &amp; password, then set permissions.</p>
+<p>Now let's create the database and a user and password, then set permissions.</p>
 
-<p>Note: this user/password will be differnt from the password we assigned to root for MySQL. I chose the username as 'builder' but you can make it anything you want.</p>
+<p>Note: this user/password will be different from the password we assigned to root for MySQL. I chose the username as 'builder' but you can make it anything you want.</p>
 
-<code>
+<code id='codebox-031' >
+<button class='copybutton' onclick="copycode('codebox-031')" title='Copy to clipboard'></button>
 <pre>
 sudo mysql
 
@@ -529,28 +622,34 @@ mysql&gt; CREATE USER 'builder'@'%' IDENTIFIED WITH mysql_native_password BY 'us
 mysql&gt; GRANT ALL ON brighttree.* TO 'builder'@'%';
 
 mysql&gt; exit
+
 </pre>
 </code>
 
-<p>If you didn't already, let's exit out so we can log in with our builder user. You will be required to enter the password for builder during login.</p>
+<p>If you haven't already, let's exit out so we can log in with our builder user. You will be required to enter the password for the builder user during login.</p>
 
-<code>
+<code id='codebox-032' >
+<button class='copybutton' onclick="copycode('codebox-032')" title='Copy to clipboard'></button>
 <pre>
 mysql -u builder -p
+
 </pre>
 </code>
 
-<p>And to test that our database was create, use the show command:</p>
+<p>And to test that our database was created, use the show command:</p>
 
-<code>
+<code id='codebox-033' >
+<button class='copybutton' onclick="copycode('codebox-033')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; show databases;
+
 </pre>
 </code>
 
 <p>You should see:</p>
 
-<code>
+<code id='codebox-034' >
+<button class='copybutton' onclick="copycode('codebox-034')" title='Copy to clipboard'></button>
 <pre>
 +--------------------+
 | Database           |
@@ -565,9 +664,11 @@ mysql&gt; show databases;
 
 <p>Now we need to use our new database.</p>
 
-<code>
+<code id='codebox-035' >
+<button class='copybutton' onclick="copycode('codebox-035')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; use brighttree;
+
 </pre>
 </code>
 
@@ -575,17 +676,20 @@ mysql&gt; use brighttree;
 
 <h3 id="servers">Create Servers table</h3>
 
-<p>You will need to be a at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
+<p>You will need to be at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
 
-<code>
+<code id='codebox-036' >
+<button class='copybutton' onclick="copycode('codebox-036')" title='Copy to clipboard'></button>
 <pre>
 sudo mysql
+
 </pre>
 </code>
 
 <p>And here is the SQL statement to create the servers table:</p>
 
-<code>
+<code id='codebox-037' >
+<button class='copybutton' onclick="copycode('codebox-037')" title='Copy to clipboard'></button>
 <pre>
 CREATE TABLE `servers` (
   `id` int(11) NOT NULL,
@@ -615,17 +719,20 @@ COMMIT;
 </pre>
 </code>
 
-<p>Check the stucture by viewing the schema. We want to make sure the 'id' is a Primary Key and Auto Increments. 'name' should also be Unique.</p>
+<p>Check the structure by viewing the schema. We want to make sure the 'id' is a Primary Key and Auto Increments. 'name' should also be Unique.</p>
 
-<code>
+<code id='codebox-038' >
+<button class='copybutton' onclick="copycode('codebox-038')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; describe servers;
+
 </pre>
 </code>
 
 <p>And you should see the following:</p>
 
-<code>
+<code id='codebox-039' >
+<button class='copybutton' onclick="copycode('codebox-039')" title='Copy to clipboard'></button>
 <pre>
 +------------------+--------------+------+-----+---------+----------------+
 | Field            | Type         | Null | Key | Default | Extra          |
@@ -653,17 +760,20 @@ mysql&gt; describe servers;
 <hr>
 
 <h3 id="dictionary">Create Dictionary table</h3>
-<p>You will need to be a at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
+<p>You will need to be at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
 
-<code>
+<code id='codebox-040' >
+<button class='copybutton' onclick="copycode('codebox-040')" title='Copy to clipboard'></button>
 <pre>
 sudo mysql
+
 </pre>
 </code>
 
 <p>And here is the SQL statement to create the servers table:</p>
 
-<code>
+<code id='codebox-041' >
+<button class='copybutton' onclick="copycode('codebox-041')" title='Copy to clipboard'></button>
 <pre>
 CREATE TABLE `dictionary` (
   `id` int(11) NOT NULL,
@@ -683,7 +793,8 @@ COMMIT;
 
 <p>And checking the schema with the describe command should look like this:</p>
 
-<code>
+<code id='codebox-042' >
+<button class='copybutton' onclick="copycode('codebox-042')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; describe dictionary;
 +-------+--------------+------+-----+---------+----------------+
@@ -702,17 +813,20 @@ mysql&gt; describe dictionary;
 
 <h3 id="actions">Create Actions table</h3>
 
-<p>You will need to be a at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
+<p>You will need to be at the <em>mysql&gt;</em> prompt to complete the MySQL configuration steps.</p>
 
-<code>
+<code id='codebox-043' >
+<button class='copybutton' onclick="copycode('codebox-043')" title='Copy to clipboard'></button>
 <pre>
 sudo mysql
+
 </pre>
 </code>
 
 <p>And here is the SQL statement to create the servers table:</p>
 
-<code>
+<code id='codebox-044' >
+<button class='copybutton' onclick="copycode('codebox-044')" title='Copy to clipboard'></button>
 <pre>
 CREATE TABLE `actions` (
   `id` int(11) NOT NULL,
@@ -731,7 +845,8 @@ COMMIT;
 
 <p>And checking the schema again:</p>
 
-<code>
+<code id='codebox-045' >
+<button class='copybutton' onclick="copycode('codebox-045')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; describe actions;
 +------------+-------------+------+-----+-------------------+-------------------+
@@ -750,11 +865,12 @@ mysql&gt; describe actions;
 
 <hr>
 
-<p>Now let's insert some data into the tables. We be adding some default values to some fields just as placeholders until we get the Bash scripts setup to pull data from 
+<p>Now let's insert some data into the tables. We will be adding some default values to some fields just as placeholders until we get the Bash scripts set up to pull data from 
 Chia to insert into the db. I'm going to have an INSERT for each of the machines I have. One farmer and five harvesters so a total of 6 inserts. You can add as many 
 (or as few) as you need.</p>
 
-<code>
+<code id='codebox-046' >
+<button class='copybutton' onclick="copycode('codebox-046')" title='Copy to clipboard'></button>
 <pre>
 INSERT INTO `servers` (`id`, `name`, `ip`, `plots`, `creating`, `size`, `capacity`, `status`, `version`, `pstatus`, `pooled`, `drives`, `plotreport`, `currentplotdrive`) VALUES (1, 'jabba', '192.168.1.135', 2749, 0, 272.08, 300, 'Farming', '1.2.11', '--:--:--:--&lt;br&gt;1246:2938.4:2.91:4756.55', 2749, 'hdd-a___41G', 'hdd-a:0', 'hdd-01');
 INSERT INTO `servers` (`id`, `name`, `ip`, `plots`, `creating`, `size`, `capacity`, `status`, `version`, `pstatus`, `pooled`, `drives`, `plotreport`, `currentplotdrive`) VALUES (4, 'tarkin', '192.168.1.137', 1152, 1, 114.021, 104, 'Harvesting', '1.2.11', '2:91:165:43:hdd-24&lt;br&gt;3193:1832.8:4.67:1791.3', 1061, '|ssd-ta__1.6T', 'hdd-01:0', 'hdd-24');
@@ -770,20 +886,23 @@ INSERT INTO `servers` (`id`, `name`, `ip`, `plots`, `creating`, `size`, `capacit
 
 <p>And now lets query a table to view the contents:</p>
 
-<code>
+<code id='codebox-047' >
+<button class='copybutton' onclick="copycode('codebox-047')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; select * from servers;
+
 </pre>
 </code>
 
-<p>As long as you see *6 rows in set* you should be good to continue on.</p>
+<p>As long as you see <em>6 rows in set</em> you should be good to continue on.</p>
 
 <hr>
 
 <p>For the dictionary table the Bash scripts are going to expect some records to exist already so we will insert a bunch of rows with names but empty values. Then the 
 Bash scripts will fill in the data for us.</p>
 
-<code>
+<code id='codebox-048' >
+<button class='copybutton' onclick="copycode('codebox-048')" title='Copy to clipboard'></button>
 <pre>
 INSERT INTO `dictionary` (`id`, `name`, `value`) VALUES (1, 'netspace', '35.013');
 INSERT INTO `dictionary` (`id`, `name`, `value`) VALUES (2, 'wallet', '37.732205990814');
@@ -808,23 +927,28 @@ INSERT INTO `dictionary` (`id`, `name`, `value`) VALUES (17, 'diskprice', '@0.01
 
 <p>You can again view the table contents to verify our insert worked:</p>
 
-<code>
+<code id='codebox-049' >
+<button class='copybutton' onclick="copycode('codebox-049')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; select * from dictionary;
+
 </pre>
 </code>
 
-<p>You should see *17 rows in set*. You can 'exit' mysql.</p>
+<p>You should see <em>17 rows in set</em>. You can 'exit' mysql.</p>
 
-<code>
+<code id='codebox-050' >
+<button class='copybutton' onclick="copycode('codebox-050')" title='Copy to clipboard'></button>
 <pre>
 mysql&gt; exit
+
 </pre>
 </code>
 
 </br>
 <hr>
-<h2 id="webapi">THE WEB API</h2>
+<h2 id="webapi">THE WEB API <img src="assets/webapi.png" width="" height="" alt="" />
+ </h2>
 <hr>
 
 <p>Our next steps will be building the API for the dashboard so we can make calls from Bash to update the db. I use the term API loosely because it is more of a list of 
@@ -832,18 +956,19 @@ functions we use in the index page.</p>
 
 <h3 id="htaccess">.htaccess file</h3>
 
-</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
-	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#dbconfig'>dbconfig.php file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
 		<div class='left'><p>You can download the full code <a href='source/.htaccess.txt' download='.htaccess'><b>.htaccess</b></a> or you can follow along and we'll build it as we go.</br>
 				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
-		<div class='right'>Skip to<br><a href='#dbconfig'>dbconfig.php file</a></div></p>
+		
 </fieldset></div>
 </br>
 
 <p>First we are going to create the .htaccess file. We will create this in our main site folder:</p>
 
-<code>
+<code id='codebox-051' >
+<button class='copybutton' onclick="copycode('codebox-051')" title='Copy to clipboard'></button>
 <pre>
 cd /var/www/brighttree/public_html
 
@@ -852,55 +977,64 @@ sudo nano .htaccess
 </pre>
 </code>
 
-<p>And then copy/paste this code in to the file.</p>
+<p>And then copy/paste this code into the file.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-052' >
+<button class='copybutton' onclick="copycode('codebox-052')" title='Copy to clipboard'></button>
 <pre>
 # Turn on the rewriting engine
 RewriteEngine On
 
 # This will allow us to use a nicer URL to call the API. This rewrite rule will parse
-# the URL into a request (or action), name, and value. Then create the GET URL for our 
+# the URL into a request (or action), name, and value. Then create the GET URL for our
 # dashboard. We use this rule for setting the value of a column in the database.
 # A typical call will look like this:
-#   https://192.168.1.135/brighttree/api/request/name/value
+#   https://192.168.1.135/api/request/name/value
 #
-# Real example: https://192.168.1.135/brighttree/api/setwallet/wallet/2.0
+# Real example: https://192.168.1.135/api/setwallet/wallet/2.0
 #
-RewriteRule ^(.*)/(.*)/(.*)/(.*)$ $1.php?req=&amp;name=&amp;val= [NC,L]
+RewriteRule ^(.*)/(.*)/(.*)/(.*)$ $1.php?req=$2&name=$3&val=$4 [NC,L]
 
 # This rewrite rule is very similar but will just take a request and a name. We use
 # this rule to get a value from the database.
-RewriteRule ^(.*)/(.*)/(.*)$ $1.php?req=&amp;name=
+RewriteRule ^(.*)/(.*)/(.*)$ $1.php?req=$2&name=$3 [NC,L]
+
+# This rewrite rule is also similar but only takes a request.
+RewriteRule ^(.*)/(.*)$ $1.php?req=$2 [NC,L]
 
 </pre>
 </code>
+</div>
 
 <hr>
 
 <h3 id="dbconfig">dbconfig.php</h3>
 
-</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
-	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
-		<div class='left'><p>You can download the full code <a href='source/dbconfig.php.txt' download='dbconfig.php'><b>dbconfig.php</b></a> or you can follow along and we'll build it as we go.</br>
-				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
-		<div class='right'>Skip to<br><a href='#api'>api.php file</a></div></p>
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#testconnect'>Testing PHP</br>connection to MySQL</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+		<div class='left'><p>You can download the full code <a href='source/dbconfig.php.txt' download='dbconfig.php' target='_blank'><b>dbconfig.php</b></a> or you can follow along and we'll build it as we go.
+			If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
 </fieldset></div>
 </br>
 
-<code>
+<code id='codebox-053' >
+<button class='copybutton' onclick="copycode('codebox-053')" title='Copy to clipboard'></button>
 <pre>
 sudo nano dbconfig.php
+
 </pre>
 </code>
 
 <p>You will need to modify the entries to reflect your configuration.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-054' >
+<button class='copybutton' onclick="copycode('codebox-054')" title='Copy to clipboard'></button>
 <pre>
 &lt;?php
-    DEFINE("HOST","192.168.1.135");
+    DEFINE("HOST","localhost");
     DEFINE("DB","brighttree");
     DEFINE("USER","builder");
     DEFINE("PASSWORD","builder_password");
@@ -908,6 +1042,7 @@ sudo nano dbconfig.php
 
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
@@ -915,17 +1050,21 @@ sudo nano dbconfig.php
 
 <h3 id="testconnect">Testing PHP connection to MySQL</h3>
 
-<p>The next file it just to test that our connection is working. </p>
+<p>The next file is just to test that our connection is working. </p>
 
-<code>
+<code id='codebox-055' >
+<button class='copybutton' onclick="copycode('codebox-055')" title='Copy to clipboard'></button>
 <pre>
 sudo nano server_list.php
+
 </pre>
 </code>
 
 <p>Just copy/paste the code below which will pull in our dbconfig, create a PDO connection and the query for a list of servers.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-056' >
+<button class='copybutton' onclick="copycode('codebox-056')" title='Copy to clipboard'></button>
 <pre>
 &lt;?php
 require "dbconfig.php";
@@ -953,6 +1092,7 @@ try {
 
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
@@ -962,9 +1102,11 @@ try {
 
 <p>We won't be needing this server_list page anymore so you can delete it if you want to keep the project directory clean.</p>
 
-<code>
+<code id='codebox-057' >
+<button class='copybutton' onclick="copycode('codebox-057')" title='Copy to clipboard'></button>
 <pre>
 sudo rm server_list.php
+
 </pre>
 </code>
 
@@ -972,41 +1114,44 @@ sudo rm server_list.php
 
 <h3 id="api">api.php file</h3>
 
-<p>Now we can build the PHP api file.</p>
-
-</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
-	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
-		<div class='left'><p>You can download the full code <a href='source/api.php.txt' download='api.php'><b>api.php</b></a> or you can follow along and we'll build it as we go.</br>
-				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
-		<div class='right'>Skip to<br><a href='#data'>data.php file</a></div></p>
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#data'>data.php file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/api.php.txt' download='api.php'><b>api.php</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
 </fieldset></div>
 </br>
 
 <p>If you aren't already in the site directory you'll need to change to that location. Then we will create a new file.</p>
 
-<code>
+<code id='codebox-058' >
+<button class='copybutton' onclick="copycode('codebox-058')" title='Copy to clipboard'></button>
 <pre>
 cd /var/www/brighttree/public_html
+
 </pre>
 </code>
 
 <p>And create a new file.</p>
 
-<code>
+<code id='codebox-059' >
+<button class='copybutton' onclick="copycode('codebox-059')" title='Copy to clipboard'></button>
 <pre>
 sudo nano api.php
+
 </pre>
 </code>
 
-<p>If your still here reading, then we'll start the code by adding in our php start and end tags, pull in the dbconfig file and set some variables GET parameters in 
+<p>If you're still here reading, then we'll start the code by adding in our php start and end tags, pull in the dbconfig file and set some variables GET parameters in 
 the URL.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-060' >
+<button class='copybutton' onclick="copycode('codebox-060')" title='Copy to clipboard'></button>
 <pre>
 &lt;?php
-
-require "dbconfig.php"
+require "data.php";
+require "dbconfig.php";
 
 $name = "";
 $req = "";
@@ -1017,15 +1162,14 @@ $val = 0;
 
 </pre>
 </code>
+</div>
 
 <p>Now let's add some code to handle the GET parameters. Start below setting the <em>$val</em> variable and before the </br><b>//END OF FILE</b> comment.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-061' >
+<button class='copybutton' onclick="copycode('codebox-061')" title='Copy to clipboard'></button>
 <pre>
-$name = "";
-$req = "";
-$val = 0;
-
 if(!empty($_GET['name']) &amp;&amp; !empty($_GET['req']))
 {
 	$req = $_GET['req'];
@@ -1046,18 +1190,17 @@ else
 }
 // END MAIN
 
-
-// END OF FILE
-
 </pre>
 </code>
+</div>
 
 <p>We need to handle the request sent in. For each case we are going to call one of the functions we'll define later and send that response back. Insert just below 
 the <b>// HANDLE REQUEST</b> comment.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-062' >
+<button class='copybutton' onclick="copycode('codebox-062')" title='Copy to clipboard'></button>
 <pre>
-	// HANDLE REQUEST
 	switch(strtolower($req))
 	{
 		// GETS
@@ -1355,19 +1498,21 @@ the <b>// HANDLE REQUEST</b> comment.</p>
 			redirect();
 			break;
 	}
+	
 </pre>
 </code>
+</div>
 
-<p>That is a long one, but you can just copy/paste it in. It doesn't require a lot of explanation each request is calling a function and then redirects back to the site.</p>
+<p>That is a long one, but you can just copy/paste it in. It doesn't require a lot of explanation; each request is calling a function and then redirects back to the site.</p>
 
 <p>Now we will continue down below the <b>// END MAIN</b> comment and just above the <b>// END OF FILE</b> comment. We will define and code each of the functions from above. </p>
 
-<p>First is the redirect function which just send the user back to the site.</p>
+<p>First is the redirect function which just sends the user back to the site.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-063' >
+<button class='copybutton' onclick="copycode('codebox-063')" title='Copy to clipboard'></button>
 <pre>
-// END MAIN
-
 function redirect()
 {
 	header('Location: http://192.168.1.135/');
@@ -1375,11 +1520,14 @@ function redirect()
 
 </pre>
 </code>
+</div>
 
-<p>Next up is the send_response function. I believe between the redirect and send_response function is there a logic bug, but since the dashboard is working for me 
+<p>Next up is the send_response function. I believe between the redirect and send_response function there is a logic bug, but since the dashboard is working for me 
 currently I am putting it in as is and I will try to refactor the code later.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-064' >
+<button class='copybutton' onclick="copycode('codebox-064')" title='Copy to clipboard'></button>
 <pre>
 function send_response($result)
 {
@@ -1395,10 +1543,13 @@ function send_response($result)
 
 </pre>
 </code>
+</div>
 
 <p>And the response function takes the value to send back and encodes it in JSON before sending.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-065' >
+<button class='copybutton' onclick="copycode('codebox-065')" title='Copy to clipboard'></button>
 <pre>
 function response($status,$status_message,$data)
 {
@@ -1410,10 +1561,9 @@ function response($status,$status_message,$data)
 	echo $json_response;
 }
 
-// END OF FILE
-
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
@@ -1421,33 +1571,35 @@ function response($status,$status_message,$data)
 
 <h3 id="data">data.php</h3>
 
-</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
-	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
-		<div class='left'><p>You can download the full code <a href='source/data.php.txt' download='data.php'><b>data.php</b></a> or you can follow along and we'll build it as we go.</br>
-				If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
-		<div class='right'>Skip to<br><a href='#farmerbackend'>Build the</br>Farmer Backend</a></div></p>
+</br><div>
+	<div class='right'>Skip to<br><a href='#farmerbackend'>Build the</br>Farmer Backend</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/data.php.txt' download='data.php'><b>data.php</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
 </fieldset></div>
 </br>
 
 
 <p>The rest of the needed api functions will be coded in the <em>data.php</em> file and are for interactions with the database. I'm not going to explain each one because I 
-think I named them pretty well and I hoping it is obvious what each does. So you can probably copy/paste the next big blob in to the file.</p>
+think I named them pretty well and I hope it is obvious what each does. So you can probably copy/paste the next big blob into the file.</p>
 
 <p>First make sure you are in the site directory and let's create the file.</p>
 
-<code>
+<code id='codebox-066' >
+<button class='copybutton' onclick="copycode('codebox-066')" title='Copy to clipboard'></button>
 <pre>
 cd /var/www/brighttree/public_html
 
-nano data.php
+sudo nano data.php
 
 </pre>
 </code>
 
 <p>And then here is the file listing.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-067' >
+<button class='copybutton' onclick="copycode('codebox-067')" title='Copy to clipboard'></button>
 <pre>
 &lt;?php
 
@@ -1860,7 +2012,6 @@ function sub_plot($name)
 
 function action_done($id)
 {
-	//DELETE FROM `movies` WHERE `movie_id` = 18;
 	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
 	$sql = "delete from actions where id='$id';";
 	$result = mysqli_query($link,$sql);
@@ -2017,40 +2168,50 @@ function set_dictionary_value($name,$value)
 
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
 </br>
 <hr>
-<h2 id="farmerbackend">BUILD THE FARMER BASH BACKEND</h2>
+<h2 id="farmerbackend">BUILD THE FARMER BASH BACKEND <img src="assets/farmer.png" width="" height="" alt="" />
+ </h2>
 <hr>
 
 <h3 id="brighttreeweb">brighttree.web.sh</h3>
 
 <p>brighttree.web.sh is the main Bash script that gathers data and uses curl to insert into the database.</p>
 
-</br><div><fieldset class='adventure'><div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
-	<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-	<legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> <b>Choose Your Own Adventure!</b></legend>
-		<div class='left'><p>You can download the full code <a href='source/brighttree.web.sh.txt' download='brighttree.web.sh'><b>brighttree.web.sh</b></a> or you can follow along and we'll build it as we go.</br>
-				If you download the file and save it to the <em>~/code/brighttree</em> folder (and update it with your edits),</br>then you can...</div>
-		<div class='right'>Skip to<br><a href='#runstat'>runstat.sh file</a></div></p>
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#runstat'>runstat.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/brighttree.web.sh.txt' download='brighttree.web.sh'><b>brighttree.web.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder (and update it with your edits),</br>then you can...</div>
 </fieldset></div>
 </br>
 
+
 <p>First make sure you are in the project folder.</p>
 
-<code>
+<code id='codebox-068' >
+<button class='copybutton' onclick="copycode('codebox-068')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 </pre>
 </code>
 
-<p><b>NOTE:</b> This script is <em>highly</em> customized to my specific configuration, including number of drives, drive names, etc. You will need to make many adjustments for
- your specifc set up. One tool I use a lot that provides a lot of information 'at a glance' is the tool Glances. If you want to install glances:</p>
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<span class='symbol'>~</span></b> is a shortcut to your user directory. We will use this a lot. It is the same thing as <em>/home/username</em></p>
+</fieldset>
+</br>
 
-<code>
+
+<p><b>NOTE:</b> This script is <em>highly</em> customized to my specific configuration, including number of drives, drive names, etc. You will need to make many adjustments for
+ your specific set up. One tool I use a lot that provides a lot of information 'at a glance' is the tool Glances. If you want to install glances:</p>
+
+<code id='codebox-069' >
+<button class='copybutton' onclick="copycode('codebox-069')" title='Copy to clipboard'></button>
 <pre>
 sudo apt install glances
 
@@ -2059,26 +2220,30 @@ sudo apt install glances
 
 <p>And then you can launch it by just typing glances on the command line.</p>
 
-<code>
+<code id='codebox-070' >
+<button class='copybutton' onclick="copycode('codebox-070')" title='Copy to clipboard'></button>
 <pre>
 glances
+
 </pre>
 </code>
 
 <p>Now let's create the script. I'll be going through a block at a time, just keep adding the code below any previous code entered. And again you will need to make 
-adjustments for your specific configuration. I will put the label ***CODE BLOCK*** just before each secton that should be added to the script.</p>
+adjustments for your specific configuration.</p>
 
-<code>
+<code id='codebox-071' >
+<button class='copybutton' onclick="copycode('codebox-071')" title='Copy to clipboard'></button>
 <pre>
-nano brighttree.web.sh
+sudo nano brighttree.web.sh
+
 </pre>
 </code>
 
 <p>Start with telling the interpreter we want to use Bash. </p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-072' >
+<button class='copybutton' onclick="copycode('codebox-072')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
@@ -2088,12 +2253,10 @@ nano brighttree.web.sh
 
 </pre>
 </code>
+</div>
 
-</br><fieldset class='moreyouknow'>
-	<legend>
-		<span style='font-weight:bold;font-size:1.25rem;'><span class="glyphicon glyphicon-info-sign"></span> The More You Know </span>
-	</legend>
-	<p><b><span style='font-size:1.45rem;'>#</span></b> is the comment character for Bash scripts. Other than the first line with <b>'#!'</b> any other line that 
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>#</span></b> is the comment character for Bash scripts. Other than the first line with <b>'#!'</b> any other line that 
 	has a <b>'#'</b> the text following it is treated as a comment and ignored. However, it has become good practice to have comments on their own line and on the 
 	same line as commands.</p>
 </fieldset>
@@ -2101,37 +2264,33 @@ nano brighttree.web.sh
 
 <p>Now we need to get the Chia python virtual environment going.</p>
 
-<b><em>CODE BLOCK</em></b>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-073' >
+<button class='copybutton' onclick="copycode('codebox-073')" title='Copy to clipboard'></button>
 <pre>
-&lt;pre style='border:1px solid green;color:lightgreen;background-color:#000000;'&gt;
 # change to the chia-blockchain directory
 cd ~/chia-blockchain
 
 # start the python virtual environment for chia
 . ./activate
 
-&lt;/pre&gt;
-
 </pre>
 </code>
+</div>
 
-</br><fieldset class='moreyouknow'>
-	<legend>
-		<span style='font-weight:bold;font-size:1.25rem;'><span class="glyphicon glyphicon-info-sign"></span> The More You Know </span>
-	</legend>
-	<p><b><span style='font-size:1.45rem;'>~</span></b> is a shortcut to your user directory. We will use this a lot. It is the same thing as <em>/home/username</em></p>
-	<p><b><span style='font-size:1.45rem;'>.</span></b> is a shortcut for the command source. The source command reads and executes commands from the file specified as 
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<span class='symbol'>.</span></b> is a shortcut for the command source. The source command reads and executes commands from the file specified as 
 	its argument in the current shell environment. It is useful to load functions, variables, and configuration files into shell scripts.</p>
 </fieldset>
 </br>
 
 <p>The next block will create a log file and add the current date and the server name into the log.</p>
 
-<b><em>CODE BLOCK</em></b>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-074' >
+<button class='copybutton' onclick="copycode('codebox-074')" title='Copy to clipboard'></button>
 <pre>
 echo $(date +"%Y%m%d %T") &gt;~/code/brighttree/.brighttree.log
 
@@ -2139,12 +2298,10 @@ echo "server = $1" &gt;&gt;~/code/brighttree/.brighttree.log
 
 </pre>
 </code>
+</div>
 
-</br><fieldset class='moreyouknow'>
-	<legend>
-		<span style='font-weight:bold;font-size:1.25rem;'><span class="glyphicon glyphicon-info-sign"></span> The More You Know </span>
-	</legend>
-	<p><b>$( )</b> Anything inside the dollar sign parentheses block will be executed immediately and the result returned in it's place. We will use that to execute 
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b>$( )</b> Anything inside the dollar sign parentheses block will be executed immediately and the result returned in its place. We will use that to execute 
 	other commands that we want the result from to use in the current command. In this instance to print with the <b>echo</b> command.</p>
 </fieldset>
 </br>
@@ -2152,9 +2309,9 @@ echo "server = $1" &gt;&gt;~/code/brighttree/.brighttree.log
 <p>The next block will get the number of plots currently being created on this computer and post that value into the database with the 'curl' command. I left the first 
 method I used when I was using the Chia plotter, but replaced it with a new method when I switched to using the MadMax plotter.</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-075' >
+<button class='copybutton' onclick="copycode('codebox-075')" title='Copy to clipboard'></button>
 <pre>
 # get the number of plots currenting being created on this machine and post to db
 # creating=`ps e -C "chia plots create" | grep -c "chia plots create"`
@@ -2165,13 +2322,11 @@ curl -s http://192.168.1.135/api/setcreating/$1/$creating &gt;&gt;~/code/brightt
 
 </pre>
 </code>
+</div>
 
-</br><fieldset class='moreyouknow'>
-	<legend>
-		<span style='font-weight:bold;font-size:1.25rem;'><span class="glyphicon glyphicon-info-sign"></span> The More You Know </span>
-	</legend>
-	<p><b>`</b> When the backtick character is wrapped around commands they are executed and the result brought back in to our script. Just like the <b>$( )</b> block. 
-	I probably should have been more consistent but I use a mix of both through out the scripts.</p>
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b>`</b> When the backtick character is wrapped around commands they are executed and the result brought back into our script. Just like the <b>$( )</b> block. 
+	I probably should have been more consistent but I use a mix of both throughout the scripts.</p>
 </fieldset>
 </br>
 
@@ -2185,9 +2340,10 @@ curl -s http://192.168.1.135/api/setcreating/$1/$creating &gt;&gt;~/code/brightt
 	transaction report. We will create the newtrx.sh script after we finish with this one.</li>
 </ul>
 
-<b><em>CODE BLOCK</em></b>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-076' >
+<button class='copybutton' onclick="copycode('codebox-076')" title='Copy to clipboard'></button>
 <pre>
 # get wallet balance and check to see if it's different from the last balance. Email if so, also update the db.
 bal=`chia wallet show | grep '   .Total Balance:' | cut --fields 6 --delimiter=\ | head -n 1`
@@ -2196,63 +2352,93 @@ lastbal=`cat ~/code/brighttree/.walletbalance`
 if [ "$bal" != "$lastbal" ]; then
         echo $bal &gt;~/code/brighttree/.walletbalance
         printf "Subject: New Chia Confirmed Balance: $bal\n\nConfirmed Balance: $bal" | /usr/sbin/ssmtp username@gmail.com
-        curl -s http://192.168.1.135/brighttree/api/setwallet/wallet/$bal &gt;&gt;~/code/brighttree/.brighttree.log
+        curl -s http://192.168.1.135/api/setwallet/wallet/$bal &gt;&gt;~/code/brighttree/.brighttree.log
         sh ~/code/brighttree/newtrx.sh
 fi
 
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>grep</span></b> will search for patterns in a file or input. The dashboard makes extensive use to grep to help parse a lot of the results 
+	we get from commands.</p>
+</fieldset>
+</br>
 
 <p>The next block will get the pool URL for the pool. </p>
 
-<b><em>CODE BLOCK</em></b>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-077' >
+<button class='copybutton' onclick="copycode('codebox-077')" title='Copy to clipboard'></button>
 <pre>
 # get pool info and put into BrightTree DB
 url=`chia plotnft show | grep 'Current pool URL' | cut --fields 4 --delimiter=\ `
 lasturl=`cat ~/code/brighttree/.poolurl`
 echo $url &gt;~/code/brighttree/.poolurl
-curl -s http://192.168.1.135/brighttree/api/setpoolurl/$url &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setpoolurl/$url &gt;&gt;~/code/brighttree/.brighttree.log
 
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>></span></b> will redirect to a file and <em>overwrite</em> the file if it already exists. We use this to echo the date so each time the 
+	script is run the old log is cleared and a new one is started.</p>
+	<p><b><span class='symbol'>>></span></b> redirection characters will also write to the file but instead of overwriting it will <em>append</em> at the end of the file. We use 
+	this every time in the script after the first echo for the log file.</p>
+</fieldset>
+</br>
 
 <p>I am in Space Pool and I only have one NFT, I'm not sure what this will do for multiple NTFs. You may get different results back from Chia that cause the <b>'grep'</b> 
 and <b>'cut'</b> commands to work unexpectedly. You may want to test this first. Can you join different pools with different NFTs? I don't know. I would expect the 
 following command to return just one line. </p>
 
-<b>Note:</b> <em>you must have a space following the last backslash because our delimiter is an actual space.</em>
+<b>Note:</b> <em>On the second line you must have a space following the backslash because our delimiter is an actual space.</em>
 
-<code>
+<p class='mono'>url=`chia plotnft show | grep 'Current pool URL' | cut --fields 4 --delimiter=\ `</p>
+
+<!--  
+<code id='codebox-078' >
+<button class='copybutton' onclick="copycode('codebox-078')" title='Copy to clipboard'></button>
 <pre>
-chia plotnft show | grep 'Current pool URL' | cut --fields 4 --delimiter=\ 
 
 </pre>
 </code>
+-->
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>echo</span></b> will print to the console (terminal window) by default. But we can redirect the output to a file using the two redirection characters.</p>
+</fieldset>
+</br>
 
 <p>If you get more than one line, you'll need to work out how to handle that. One option is to not bother with adding this to the db. You can make the value blank by 
-setting the 'url' variable equal to a pair of double-quotes. Honestly, I don't even display this information in the dashboard in the current version, so setting to 
+setting the 'url' variable equal to a pair of double-quotes. Honestly, I don't even display this information in the dashboard in the current version, so setting it to 
 empty or even leaving the code block out would be fine.</p>
 
-<code>
+<p class='mono'>url=""</p>
+
+<!-- 
+<code id='codebox-079' >
+<button class='copybutton' onclick="copycode('codebox-079')" title='Copy to clipboard'></button>
 <pre>
-url=""
 
 </pre>
 </code>
+-->
 
-<p>The next block is specific to my farming server. It gets a count of plots for each drive, totals them up and then puts that value into the databse. I know they are 
+<p>The next block is specific to my farming server. It gets a count of plots for each drive, totals them up and then puts that value into the databaase. I know they are 
 all NFT plots because I only put NFTs into the 'spacepool' subdirectory of the drive. Also worth mentioning that this total plot count isn't even used in the dashboard 
 currently. So again this is another code block that could be left out. I'm leaving several of these in here simply so you can see how I did it. Maybe you'll find the 
 technique useful somewhere else.</p>
 
-<p>Also, I'm sure there is a better way to do this. It grew over time to be fairly large blob of code but it didn't start that way... and I have to update it every time 
+<p>Also, I'm sure there is a better way to do this. It grew over time to be a fairly large blob of code but it didn't start that way... and I have to update it every time 
 I add/remove a drive.</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-080' >
+<button class='copybutton' onclick="copycode('codebox-080')" title='Copy to clipboard'></button>
 <pre>
 # get the count of pool plots and put into BrightTree DB - JABBA
 jhdd_a=`find /mnt/hdd-a/spacepool/ -name "*.plot" | wc -l`
@@ -2279,12 +2465,17 @@ echo "jabba pooled = $j_poolplots" &gt;&gt;~/code/brighttree/.brighttree.log
 jabba_lastpool=`cat ~/code/brighttree/.jabbapoolcount`
 if [ $j_poolplots -ne $jabba_lastpool ]; then
         echo $j_poolplots &gt;~/code/brighttree/.jabbapoolcount
-        curl -s http://192.168.1.135/brighttree/api/setpooled/jabba/$j_poolplots &gt;&gt;~/sourcecode/brighttree/.brighttree.log
+        curl -s http://192.168.1.135/api/setpooled/jabba/$j_poolplots &gt;&gt;~/sourcecode/brighttree/.brighttree.log
 fi
 
 </pre>
 </code>
+</div>
 
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>wc</span></b> ia a command that will count words, but if we use the -l option it will count lines for us.</p>
+</fieldset>
+</br>
 
 <p>The next code block will run a php script that will parse the Chia farm summary and get the plot count and sizes for the farmer and each harvester. This php script 
 replaced the code block above (along with some code that has already been removed) that isn't really used anymore.</p>
@@ -2293,136 +2484,173 @@ replaced the code block above (along with some code that has already been remove
 instance I gave up on getting it right in Bash and resorted to scripting it in PHP. We will actually write the PHP file later after we finish with the main script 
 'brighttree.web.sh'.</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-081' >
+<button class='copybutton' onclick="copycode('codebox-081')" title='Copy to clipboard'></button>
 <pre>
 # Set plot count and sizes with the php script below
 php -f ~/code/brighttree/setplotcounts.php
 
 </pre>
 </code>
+</div>
 
 <p>The next code block will get the Chia farm summary and parse it down on data values that we will put into the database. These are structured pretty much the same so 
 they are all in the one code block together.</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-082' >
+<button class='copybutton' onclick="copycode('codebox-082')" title='Copy to clipboard'></button>
 <pre>
 # update the db with the my-plotcount from farm summary
 totalcount=`chia farm summary | tail -n 5 | head -n 1 | cut --fields 6 --delimiter=\ `
 echo "my plotcount = $totalcount" &gt;&gt;~/code/brighttree/.brighttree.log
-curl -s http://192.168.1.135/brighttree/api/setmyplotcount/my-plotcount/$totalcount &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setmyplotcount/my-plotcount/$totalcount &gt;&gt;~/code/brighttree/.brighttree.log
 
 # update the db with my-netspace from farm summary
 totalsize=`chia farm summary | tail -n 4 | head -n 1 | cut --fields 5,6 --delimiter=\ `
 echo "my netspace = $totalsize" &gt;&gt;~/code/brighttree/.brighttree.log
-curl -s http://192.168.1.135/brighttree/api/setmynetspace/my-netspace/$totalsize &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setmynetspace/my-netspace/$totalsize &gt;&gt;~/code/brighttree/.brighttree.log
 
 # update the db with the chia status for this server
 status=`chia farm summary | grep 'Farming status' | cut --fields 3,4 --delimiter=\ `
 echo "status = $status" &gt;&gt;~/code/brighttree/.brighttree.log
-curl -s http://192.168.1.135/brighttree/api/setstatus/$1/$status &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setstatus/$1/$status &gt;&gt;~/code/brighttree/.brighttree.log
 
 # update the db with the size of the chia netspace
 net=`chia farm summary | grep 'Estimated network space' | cut --fields 4,5 --delimiter=\ `
 echo "net = $net" &gt;&gt;~/code/brighttree/.brighttree.log
-curl -s http://192.168.1.135/brighttree/api/setnetspace/netspace/$net &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setnetspace/netspace/$net &gt;&gt;~/code/brighttree/.brighttree.log
 
 # update the db with the ttw for chia
 ttw=`chia farm summary | tail -n 2 | head -n 1 | cut --fields 2 --delimiter=: | xargs | tr ' ' '_'`
 echo "ttw = $ttw" &gt;&gt;~/code/brighttree/.brighttree.log
-curl -s http://192.168.1.135/brighttree/api/setchiattw/chia-ttw/$ttw &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setchiattw/chia-ttw/$ttw &gt;&gt;~/code/brighttree/.brighttree.log
 
 # update the db with the install version of chia
 ver=`chia version`
-curl -s http://192.168.1.135/brighttree/api/setversion/$1/$ver
+curl -s http://192.168.1.135/api/setversion/$1/$ver &gt;&gt;~/code/brighttree/.brighttree.log
 
 </pre>
 </code>
+</div>
 
-<p>The next block of code will run another Bash script against my plotting script. It returns plotstatus for any current plotting processes. The script uses the log 
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>head</span></b> This command will allow you to get <em>n</em> number of lines from the top of the input.</p>
+	<p><b><span class='symbol'>tail</span></b> This command will allow you to get <em>n</em> number of lines from the bottom of the input.</p>
+</fieldset>
+</br>
+
+<p>The next block of code will run another Bash script against my plotting script. It returns <em>plotstatus</em> for any current plotting processes. The script uses the log 
 file specified in the MadMaxPlot script. We will write 'runstat.sh' after we finish with this script. Then the code block continues by building up a summary of the 
-running process and then puts that into the database. There is some code commented out becuase it was written for the original Chia plotter and had to be rewrote 
+running process and then puts that into the database. There is some code commented out because it was written for the original Chia plotter and had to be rewrote 
 for MadMax.</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-083' >
+<button class='copybutton' onclick="copycode('codebox-083')" title='Copy to clipboard'></button>
 <pre>
 # get the phase of each running process (if possible), send to db
 # madmaxplot.sh is my plotting script
-pstatus=`bash ~/code/brighttree/runstat.sh ~/madmaxplot.sh $1`
+pstatus=`bash ~/code/brighttree/runstat.sh ~/code/brighttree/madmaxplot.sh $1 | xargs`
 
 # current run summary, merge with the phase status (this was for the orignal plotter and was replace when I switched to MadMax)
-#runsum=`grep -i "total time" ~/chialogs/*.log | awk '{sum=sum+} {avg=sum/NR} {tday=86400/avg*8*101.366/1024} END {printf "%d:%0.1f:%0.2f", NR, avg, tday}'`
+#runsum=`grep -i "total time" ~/chialogs/*.log | awk '{sum=sum+$4} {avg=sum/NR} {tday=86400/avg*8*101.366/1024} END {printf "%d:%0.1f:%0.2f", NR, avg, tday}'`
 # MADMAX version for runsum value
 #   be sure to update the tday formula for the number of concurrent processing creating plots. Originally probably 8 but with MadMax should be 1
 lastrun=`cat ~/code/brighttree/.lastplottime`
-runsum=`grep -i "Total plot creation time" ~/chialogs/*.log | awk '{sum=sum+} {avg=sum/NR} {tday=86400/avg*1*101.366/1024} END {printf "%d:%0.1f:%0.2f", NR, avg, tday}'`
+runsum=`grep -i "Total plot creation time" ~/code/brighttree/chialogs/*.log | awk '{sum=sum+$6} {avg=sum/NR} {tday=86400/avg*1*101.366/1024} END {printf "%d:%0.1f:%0.2f", NR, avg, tday}'`
 runsum="$runsum:$lastrun"
 pstatsum="$pstatus&lt;br&gt;$runsum"
 echo "pstatsum = $pstatsum" &gt;&gt;~/code/brighttree/.brighttree.log
 
 # merged phases status and run summary
-curl -s http://192.168.1.135/brighttree/api/setpstatus/$1/$pstatsum &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setpstatus/$1/"$pstatsum" &gt;&gt;~/code/brighttree/.brighttree.log
 
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>awk</span></b> is a program that you can use to select particular records in a file and perform operations. We use it to do calculations on 
+	values and return the results in a formatted string.</p>
+</fieldset>
+</br>
+
 
 <p>The next block of code will use the <b>'df'</b> command to build up a list of drives and their sizes. Then put that value into the database. <b>$1</b> is the server name which 
 is passed into this script when it is ran.</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-084' >
+<button class='copybutton' onclick="copycode('codebox-084')" title='Copy to clipboard'></button>
 <pre>
 # get drives info and put into BrightTree DB
 # need a df statement for each type drive filesystem in use for plots, concat them together with double ampersands
 drives=`df -h -t fuseblk --output=target,avail | grep "/" | cut --fields 3 --delimiter=\/ | tr ' ' '_' | tr '\n' '|' &amp;&amp; df -h -t exfat --output=target,avail | grep "/" | cut --fields 4 --delimiter=\/ | tr ' ' '_' | tr '\n' '|' &amp;&amp; df -h -t ext4 --output=target,avail | grep "/" | cut --fields 3 --delimiter=\/ | tr ' ' '_' | tr '\n' '|'`
-curl -s http://192.168.1.135/brighttree/api/setdrives/$1/$drives &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setdrives/$1/$drives &gt;&gt;~/code/brighttree/.brighttree.log
 echo "drives = $drives" &gt;~/code/brighttree/.drives
 
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>tr</span></b> is a command that will allow us to do string replacement. We will use it to replace spaces with underscores in several places.</p>
+</fieldset>
+</br>
 
 <p><b>Note:</b> you may need to do some digging to find out what kind of filesystem your drives have. I used the command below to list out all the drives then made note of the 
 filesystem I'd need and built up the command in the code block.</p>
 
-<code>
-<pre>
- df --output=target,fstype,source
+<p class='mono'>df --output=target,fstype,source</p>
 
+<!-- 
+<code id='codebox-085' >
+<button class='copybutton' onclick="copycode('codebox-085')" title='Copy to clipboard'></button>
+<pre>
+ 
 </pre>
 </code>
+-->
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>df</span></b> will display the amount of disk space available on the file system. We use it to get a list of drives to use for the dashboard.</p>
+</fieldset>
+</br>
 
 <p>I have 3 different types of filesystems in use: fuseblk, exfat, and ext4. That is why you find two <b>'&&'</b> in the command. Those to join the result of the 
-three differnt types into one result.</p>
+three different types into one result.</p>
 
-<p>The next block of code will check if there any actions added to the database that need to be performed. I don't use this code anymore since I've completely replotted 
-for NFT. The dashboard used to have columns/counts for each type of type, OG and NFT, and give a clickable button to be able to delete a single OG plot at a time.</p>
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>&&</span></b> will allow condition execution. If the command on the left side completes successfully then the right side is processed. 
+	These can be nested to make a series of commands to execute if each is successful.</p>
+</fieldset>
+</br>
 
-<p>This was how I kept my drive pretty much full while still plotting and removing old drives. It wasn't automated I had to watch it, but I have the dashboard open all 
+<p>The next block of code will check if there are any actions added to the database that need to be performed. I don't use this code anymore since I've completely replotted 
+my drives for NFT. The dashboard used to have columns/counts for each type of type, OG and NFT, and give a clickable button to be able to delete a single OG plot at a time.</p>
+
+<p>This was how I kept my drive pretty much full while still plotting and removing old drives. It wasn't automated. I had to watch it, but I have the dashboard open all 
 the time anyway. When the size got low enough, I used to display a warning in the dashboard and I would then click a button on the webpage to delete the oldest plot 
 (in only the OG directory... remember I kept OG and NFT in different folders). I thought the 'action' system might be useful down the road, but I never came up with 
 any other actions to perform beyond deleting old plots. Honestly, this is another code block that really could be left out.</p>
 
-<p>Also, since it is deleting plots on the drives, it is very specific to my set up. If you keep this code block in, you need to make adjustments for your drives and 
+<p>Also, since it is deleting plots on the drives, it is very specific to my setup. If you keep this code block in, you need to make adjustments for your drives and 
 plot locations.</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-086' >
+<button class='copybutton' onclick="copycode('codebox-086')" title='Copy to clipboard'></button>
 <pre>
 # check BrightTree DB for any actions
-action=`curl -s http://192.168.1.135/brighttree/api/getaction/$1`
+action=`curl -s http://192.168.1.135/api/getaction/$1`
 action_id=$(echo $action | jq -r '.data[0].id')
 action_name=$(echo $action | jq -r '.data[0].action')
 action_target=$(echo $action | jq -r '.data[0].itemid')
 echo "ACTION:  ID=$action_id - NAME=$action_name - TARGET=$action_target" &gt;&gt;~/code/brighttree/.brighttree.log
 # dp for delete plot - used this for slowly deleting old OG plots while I was creating new NFT plots
-if [ $action_name == "dp" ]; then
+if [[ $action_name == "dp" ]]; then
 
     case $action_target in
         "hdd-a")
@@ -2483,17 +2711,25 @@ if [ $action_name == "dp" ]; then
             rm "$(ls -t /mnt/ssd-ta/*.plot | tail -1)"
             ;;
     esac
-    curl -s http://192.168.1.135/brighttree/api/actiondone/$action_id
+    curl -s http://192.168.1.135/api/actiondone/$action_id &gt;&gt;~/code/brighttree/.brighttree.log
 fi
+
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>curl</span></b> will allow data transfer between servers. We use it to pull content from URLs, and also push data to our dashboard 
+	application through the api.</p>
+</fieldset>
+</br>
 
 <p>The last code block for the <b>'brighttree.web.sh'</b> file will stop the python virtual environment and make sure the log file ends with a linefeed (so if you 
 '<em>cat ./brighttree.log</em>' it won't leave your prompt on the same line).</p>
 
-<b><em>CODE BLOCK</em></b>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-087' >
+<button class='copybutton' onclick="copycode('codebox-087')" title='Copy to clipboard'></button>
 <pre>
 # stop the python virtual environment for chia
 deactivate
@@ -2501,6 +2737,7 @@ echo "" &gt;&gt;~/code/brighttree/.brighttree.log
 
 </pre>
 </code>
+</div>
 
 <p>Finally... save and exit.</p>
 
@@ -2510,26 +2747,36 @@ echo "" &gt;&gt;~/code/brighttree/.brighttree.log
 
 <h3 id="runstat">runstat.sh</h3>
 
-adventure
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#currentvalue'>currentvalue.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/runstat.sh.txt' download='runstat.sh'><b>runstat.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
 
-<p>runstat.sh will get data from the current plotting job and put into the database. This script is designed around my specific plotting script (and my plots and 
+<p>runstat.sh will get data from the current plotting job and put it into the database. This script is designed around my specific plotting script (and my plots and 
 drives), if you have one that is different or you use a plot manager, you may not want this script at all. If that is the case, you should modify 
 <b>'brighttree.web.sh'</b> and remove the code block that calls this script. Otherwise, if you do use a script for plotting, you'll need to make adjustments to 
 the <b>'cut'</b> commands to get the correct values from your script.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-088' >
+<button class='copybutton' onclick="copycode('codebox-088')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano runstat.sh
+
 </pre>
 </code>
 
 <p>You will need to make adjustments for the drives you have and the location of plots.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-089' >
+<button class='copybutton' onclick="copycode('codebox-089')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
@@ -2613,7 +2860,7 @@ while read line; do
 				drvout="ssd-ta"
 				;;
 		esac
-		curl -s http://192.168.1.135/brighttree/api/setcurplotdrive/$2/$drvout
+		curl -s http://192.168.1.135/api/setcurplotdrive/$2/$drvout
 		pha=`cat $log | grep "Phase " | tail -n 1 | cut --fields 2 --delimiter=\ `
 		pha=$(($pha+1))
 		if [[ $pha -gt 4 ]]; then
@@ -2633,14 +2880,31 @@ while read line; do
 	fi
 done &lt; $1
 echo $out
+
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>|</span></b> will allow you to string commands together passing the result from the first to the input of the second. You will use this 
+	a lot during this walkthrough.</p>
+</fieldset>
+</br>
+
 
 <p>Save and exit.</p>
 
 <hr>
 
 <h3 id="currentvalue">currentvalue.sh</h3>
+
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#setplotcounts'>setplotcounts.php file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/currentvalue.sh.txt' download='currentvalue.sh'><b>currentvalue.sh</b></a> or you can follow along and 
+	we'll build it as we go. If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
 
 <p>currentvalue.sh will pull current values from the Space Pool API and put them into the database. You need to request a developer ID to be able to use their API, 
 which you can do in the Space Pool Discord. I will still give you all the code but replace my developer ID with the string <b>DEVELOPER_KEY</b>. The API call also 
@@ -2651,93 +2915,127 @@ needs your launcher ID which I am replacing mine with <b>LAUNCHER_ID</b> also. Y
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-090' >
+<button class='copybutton' onclick="copycode('codebox-090')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano currentvalue.sh
+
 </pre>
 </code>
 
 <p>Here is the file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-091' >
+<button class='copybutton' onclick="copycode('codebox-091')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
 # Get current price from CoinMarketCap
 content=`curl -s https://coinmarketcap.com/currencies/chia-network/`
 value=`echo $content | cut -d'$' -f 6 | cut -d'&lt;' -f 1`
-curl -s http://192.168.1.135/brighttree/api/setprice/price/$value &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setprice/price/$value &gt;&gt;~/code/brighttree/.curval.log
 echo "current value = $value" &gt;~/code/brighttree/.curval.log
 
 # Get My Pool info
 json=`curl -s --request GET --url https://developer.pool.space/api/v1/farms/LAUNCHER_ID --header 'Accept: text/plain' --header 'Developer-Key: DEVELOPER_KEY' --header 'User-Agent: curl/7.68.0'`
 
-rank=$(echo $json | jq -r ".rank")
-unpaid=$(echo $json | jq -r ".unpaidBalanceInXCH")
-paid=$(echo $json | jq -r ".totalPaidInXCH")
-plotsize=$(echo $json | jq -r ".estimatedPlotSizeTiB")
-plotcount=$(echo $json | jq -r ".estimatedPlots")
+# Wanted to keep some history for debugging. Found while I was testing this Walkthrough I was going over my rate limit because I had multiple versions of the dashboard running concurrently.
+rm ~/code/brighttree/.mypool.3.json
+mv ~/code/brighttree/.mypool.2.json ~/code/brighttree/.mypool.3.json
+mv ~/code/brighttree/.mypool.1.json ~/code/brighttree/.mypool.2.json
+echo $json > ~/code/brighttree/.mypool.1.json
 
-curl -s http://192.168.1.135/brighttree/api/setpoolrank/pool-rank/$rank &gt;&gt;~/code/brighttree/.curval.log
+rank=$(echo $json | jq -r '.rank')
+unpaid=$(echo $json | jq -r '.unpaidBalanceInXCH')
+paid=$(echo $json | jq -r '.totalPaidInXCH')
+plotsize=$(echo $json | jq -r '.estimatedPlotSizeTiB')
+plotcount=$(echo $json | jq -r '.estimatedPlots')
+
+curl -s http://192.168.1.135/api/setpoolrank/pool-rank/$rank &gt;&gt;~/code/brighttree/.curval.log
 echo "pool rank = $rank" &gt;&gt;~/code/brighttree/.curval.log
 
-curl -s http://192.168.1.135/brighttree/api/setpoolunpaid/pool-unpaid/$unpaid &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setpoolunpaid/pool-unpaid/$unpaid &gt;&gt;~/code/brighttree/.curval.log
 echo "pool unpaid = $unpaid" &gt;&gt;~/code/brighttree/.curval.log
 
-curl -s http://192.168.1.135/brighttree/api/setpoolpaid/pool-paid/$paid &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setpoolpaid/pool-paid/$paid &gt;&gt;~/code/brighttree/.curval.log
 echo "pool paid = $paid" &gt;&gt;~/code/brighttree/.curval.log
 
-curl -s http://192.168.1.135/brighttree/api/setpoolplotsize/pool-plotsize/$plotsize &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setpoolplotsize/pool-plotsize/$plotsize &gt;&gt;~/code/brighttree/.curval.log
 echo "pool plotsize = $plotsize" &gt;&gt;~/code/brighttree/.curval.log
 
-curl -s http://192.168.1.135/brighttree/api/setpoolplotcount/pool-plotcount/$plotcount &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setpoolplotcount/pool-plotcount/$plotcount &gt;&gt;~/code/brighttree/.curval.log
 echo "pool plotcount = $plotcount" &gt;&gt;~/code/brighttree/.curval.log
 
 # Get Space Pool info
 spacepool=`curl -s --request GET --url https://developer.pool.space/api/v1/pool --header 'Accept: text/plain' --header 'Developer-Key: DEVELOPER_KEY' --header 'User-Agent: curl/7.68.0'`
 
+# Wanted to keep some history for debugging. Found while I was testing this Walkthrough I was going over my rate limit because I had multiple versions of the dashboard running concurrently.
+rm ~/code/brighttree/.spacepool.3.json
+mv ~/code/brighttree/.spacepool.2.json ~/code/brighttree/.spacepool.3.json
+mv ~/code/brighttree/.spacepool.1.json ~/code/brighttree/.spacepool.2.json
+echo $spacepool > ~/code/brighttree/.spacepool.1.json
+
 sp_totnet=$(echo $spacepool | jq -r ".totalNetSpaceTiB")
 sp_poolnet=$(echo $spacepool | jq -r ".poolNetSpaceTiB")
 sp_ttw=$(echo $spacepool | jq -r ".estimatedTimeToWinSeconds")
 
-curl -s http://192.168.1.135/brighttree/api/setchianetspace/chia-netspace/$sp_totnet &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setchianetspace/chia-netspace/$sp_totnet &gt;&gt;~/code/brighttree/.curval.log
 echo "chia netspace = $sp_totnet" &gt;&gt;~/code/brighttree/.curval.log
 
-curl -s http://192.168.1.135/brighttree/api/setspacepoolnetspace/spacepool-netspace/$sp_poolnet &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setspacepoolnetspace/spacepool-netspace/$sp_poolnet &gt;&gt;~/code/brighttree/.curval.log
 echo "spacepool netspace = $sp_poolnet" &gt;&gt;~/code/brighttree/.curval.log
 
-curl -s http://192.168.1.135/brighttree/api/setspacepooltimetowin/spacepool-time-to-win/$sp_ttw &gt;&gt;~/code/brighttree/.curval.log
+curl -s http://192.168.1.135/api/setspacepooltimetowin/spacepool-time-to-win/$sp_ttw &gt;&gt;~/code/brighttree/.curval.log
 echo "spacepool time to win = $sp_ttw" &gt;&gt;~/code/brighttree/.curval.log
 
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>jq</span></b> allows us to get data from a JSON object. We use this to parse data returned from curl in JSON format.</p>
+</fieldset>
+</br>
 
 <p>Save and exit.</p>
 
 <hr>
 
-<h3 id="setplotscount">setplotscount.php</h3>
+<h3 id="setplotcounts">setplotcounts.php</h3>
 
-<p>setpltocount.php will parse the plotcount and plotsize for the farmer and each harvester from the Chia farm summary and put that into the database. I have 1 farmer 
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#plotreport'>plotreport.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/setplotcounts.php.txt' download='setplotcounts.php'><b>setplotcounts.php</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The setpltocount.php script will parse the plotcount and plotsize for the farmer and each harvester from the Chia farm summary and put that into the database. I have 1 farmer 
 and 5 harvesters so there will be 6 servers set up in this file. You will need to adjust for your configuration. Also since all my servers start with a different 
-letter, the variable all start the letter of the server it is for. For example. $jcount is the plot count for 'jabba'. The farmer will be "Local" and the harvesters 
+letter, the variable all start the letter of the server it is for. For example, $jcount is the plot count for 'jabba'. The farmer will be "Local" and the harvesters 
 will be "Remote".</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-092' >
+<button class='copybutton' onclick="copycode('codebox-092')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
-nano setplotcount.php
+nano setplotcounts.php
+
 </pre>
 </code>
 
 <p>Here is the file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-093' >
+<button class='copybutton' onclick="copycode('codebox-093')" title='Copy to clipboard'></button>
 <pre>
 &lt;?php
 
@@ -2816,48 +3114,48 @@ if($jlastcount != $jcount)
 {
 	shell_exec("echo " . $jcount . " &gt;~/code/brighttree/.jabbaplotcount");
 	shell_exec("echo " . $jsize . " &gt;~/code/brighttree/.jabbaplotsize");
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/jabba/". $jcount);
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/jabba/". $jsize);
+	shell_exec("curl -s http://192.168.1.135/api/setcount/jabba/". $jcount);
+	shell_exec("curl -s http://192.168.1.135/api/setsize/jabba/". $jsize);
 }
 
 if($tlastcount != $tcount)
 {
 	shell_exec("echo " . $tcount . " &gt;~/code/brighttree/.tarkinplotcount");
 	shell_exec("echo " . $tsize . " &gt;~/code/brighttree/.tarkinplotsize");
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/tarkin/". $tcount);
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/tarkin/". $tsize);
+	shell_exec("curl -s http://192.168.1.135/api/setcount/tarkin/". $tcount);
+	shell_exec("curl -s http://192.168.1.135/api/setsize/tarkin/". $tsize);
 }
 
 if($slastcount != $scount)
 {
 	shell_exec("echo " . $scount . " &gt;~/code/brighttree/.starkillerplotcount");
 	shell_exec("echo " . $ssize . " &gt;~/code/brighttree/.starkillerplotsize");
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/starkiller/". $scount);
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/starkiller/". $ssize);
+	shell_exec("curl -s http://192.168.1.135/api/setcount/starkiller/". $scount);
+	shell_exec("curl -s http://192.168.1.135/api/setsize/starkiller/". $ssize);
 }
 
 if($klastcount != $kcount)
 {
 	shell_exec("echo " . $kcount . " &gt;~/code/brighttree/.kinnakeetplotcount");
 	shell_exec("echo " . $ksize . " &gt;~/code/brighttree/.kinnakeetplotsize");
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/kinnakeet/". $kcount);
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/kinnakeet/". $ksize);
+	shell_exec("curl -s http://192.168.1.135/api/setcount/kinnakeet/". $kcount);
+	shell_exec("curl -s http://192.168.1.135/api/setsize/kinnakeet/". $ksize);
 }
 
 if($llastcount != $lcount)
 {
 	shell_exec("echo " . $lcount . " &gt;~/code/brighttree/.landoplotcount");
 	shell_exec("echo " . $lsize . " &gt;~/code/brighttree/.landoplotsize");
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/lando/". $lcount);
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/lando/". $lsize);
+	shell_exec("curl -s http://192.168.1.135/api/setcount/lando/". $lcount);
+	shell_exec("curl -s http://192.168.1.135/api/setsize/lando/". $lsize);
 }
 
 if($vlastcount != $vcount)
 {
 	shell_exec("echo " . $vcount . " &gt;~/code/brighttree/.vaderplotcount");
 	shell_exec("echo " . $vsize . " &gt;~/code/brighttree/.vaderplotsize");
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/vader/". $vcount);
-	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/vader/". $vsize);
+	shell_exec("curl -s http://192.168.1.135/api/setcount/vader/". $vcount);
+	shell_exec("curl -s http://192.168.1.135/api/setsize/vader/". $vsize);
 }
 
 
@@ -2878,6 +3176,7 @@ function getPlotSize($line)
 
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
@@ -2885,24 +3184,36 @@ function getPlotSize($line)
 
 <h3 id="plotreport">plotreport.sh</h3>
 
-<p>plotreport.sh builds a list of drives and plots and puts into database. Again this script is built about my drives, so adjust for your configuration. Also the 
-<em>og</em> variable for the the OG plot locations. Even if you don't have any OG plots anymore, I'd still put a value into those variable... a valid location that 
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#percent'>percent.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/plotreport.sh.txt' download='plotreport.sh'><b>plotreport.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The plotreport.sh script builds a list of drives and plots and puts them into the database. Again this script is built about my drives, so adjust for your configuration. Also the 
+<em>og</em> variable is for the OG plot locations. Even if you don't have any OG plots anymore, I'd still put a value into those variables... a valid location that 
 doesn't contain any NFT plots either. Then the script will calculate 0 which is fine. If you don't have real locations in there it would cause issues. The summary 
-built and added to the database is parse in the PHP code we wrote, so we need a least a '0' to get in there as a placeholder.</p>
+built and added to the database is parsed in the PHP code we wrote, so we need at least a '0' to get in there as a placeholder.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-094' >
+<button class='copybutton' onclick="copycode('codebox-094')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano plotreport.sh
+
 </pre>
 </code>
 
 <p>Here is the file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-095' >
+<button class='copybutton' onclick="copycode('codebox-095')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
@@ -3027,11 +3338,13 @@ summary="$summary$d01:$nft01_count|$d02:$nft02_count|$d03:$nft03_count|$d04:$nft
 summary="$summary$d09:$nft09_count|$d10:$nft10_count|$d11:$nft11_count|$d12:$nft12_count|$d13:$nft13_count|$d14:$nft14_count|$d15:$nft15_count|$d16:$nft16_count|"
 summary="$summary$d17:$nft17_count|$d18:$nft18_count|$d19:$nft19_count|$d20:$nft20_count"
 
-curl -s http://192.168.1.135/brighttree/api/setplotreport/jabba/$summary
+curl -s http://192.168.1.135/api/setplotreport/jabba/$summary > ~/code/brighttree/.plotreport
+
 </pre>
 </code>
+</div>
 
-<p>Also, there be sure to change the server name on the last line... the <em>'curl'</em> statement.</p>
+<p>Also, be sure to change the server name on the last line... the <em>'curl'</em> statement.</p>
 
 <p>Save and exit.</p>
 
@@ -3039,23 +3352,35 @@ curl -s http://192.168.1.135/brighttree/api/setplotreport/jabba/$summary
 
 <h3 id="percent">percent.sh</h3>
 
-<p>percent.sh uses the current plotting log to calculate a percent complete. It is ran from within the runstat.sh script, so if you didn't code that script because 
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#madmaxplot'>madmaxplot.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/percent.sh.txt' download='percent.sh'><b>percent.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The percent.sh script uses the current plotting log to calculate a percent complete. It is run from within the runstat.sh script, so if you didn't code that script because 
 you aren't using a plotting script or you are using a plot manager, then you won't need this script either. Also this version is specific to MadMax plotting, so 
 if you don't use MadMax you likely don't want this one either... or you'll need to do a major rewrite for a different plotter.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-096' >
+<button class='copybutton' onclick="copycode('codebox-096')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano percent.sh
+
 </pre>
 </code>
 
 <p>Here is the file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-097' >
+<button class='copybutton' onclick="copycode('codebox-097')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
@@ -3151,49 +3476,74 @@ case $status in
 esac
 
 echo $per
+
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>--help</span></b>Need help? Typing a <em>command</em> followed by <em>--help</em> will display the syntax for the command including all the command-line 
+	options, so if you don't know what one of the options means, you can use the <em>--help</em> option to look it up. Another option is to use the command <em>'man'</em> to look for 
+	help in the manual. <em>man command</em> to view that documentation. <b>Note:</b> use 'q' to quit out of man.</p>
+</fieldset>
+</br>
 
 <p>Save and exit.</p>
 
 <hr>
 
-<h3 id="madmaxplot.sh">madmaxplot.sh</h3>
+<h3 id="madmaxplot">madmaxplot.sh</h3>
 
-<p>madmaxplot.sh is my plotting script. I make changes to it before each run. I usually will change the value of the number option, the drive for the destination, and 
-the logfile at the end. I have a directory /home/steve/chialog where I will go before edit this script and run the 'touch' command to create a new empty log file.</p>
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#newtrx'>newtrx.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/madmaxplot.sh.txt' download='madmaxplot.sh'><b>madmaxplot.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
 
-<code>
+<p>The madmaxplot.sh file is my plotting script. I make changes to it before each run. I usually will change the value of the number option, the drive for the destination, and 
+the logfile at the end. I have a directory /home/steve/brighttree/chialogs where I will go before editing this script and run the 'touch' command to create a new empty log file.</p>
+
+<code id='codebox-098' >
+<button class='copybutton' onclick="copycode('codebox-098')" title='Copy to clipboard'></button>
 <pre>
-cd ~/chialogs
+cd ~/code/brighttree/chialogs
 
 touch chia45.log
+
 </pre>
 </code>
 
-<p>You want to update the username in the paths from steve to your user. Also, I am using 15 thread on this server. If you try to use this script for MadMax plotting, 
+<p>You want to update the username in the paths to your user. Also, I am using 15 threads on this server. If you try to use this script for MadMax plotting, 
 you will need to change for what is best for your system. And finally, I replaced my Pool Contact Address and Farmer Public Keys. You'll want to put in your instead.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-099' >
+<button class='copybutton' onclick="copycode('codebox-099')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano madmaxplot.sh
+
 </pre>
 </code>
 
 <p>And here is the file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-100' >
+<button class='copybutton' onclick="copycode('codebox-100')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
-screen -d -m -S c1 bash -c 'cd /home/steve/chia-blockchain &amp;&amp; . ./activate &amp;&amp; ~/madmax/chia-plotter/build/chia_plot -t /mnt/ssd-ta/ -2 /mnt/ssd-ta/ -d /mnt/hdd-01/spacepool/ -n 7 -c POOL_CONTRACT_ADDRESS -f FARMER_PUBLIC_KEY -r 15 |tee /home/steve/chialogs/chia44.log'
+screen -d -m -S c1 bash -c 'cd /home/username/chia-blockchain &amp;&amp; . ./activate &amp;&amp; ~/madmax/chia-plotter/build/chia_plot -t /mnt/ssd-ta/ -2 /mnt/ssd-ta/ -d /mnt/hdd-01/spacepool/ -n 7 -c POOL_CONTRACT_ADDRESS -f FARMER_PUBLIC_KEY -r 15 |tee /home/username/code/brighttree/chialogs/chia44.log'
+
 </pre>
 </code>
-
-<p><b>Note:</b> there is not a space betwee the pipe '|' character and the 'tee' command. It needs to be like that unless you are going to change the runstat.sh script on 
+</div>
+S
+<p><b>Note:</b> there is not a space between the pipe '|' character and the 'tee' command. It needs to be like that unless you are going to change the <em>runstat.sh</em> script on 
 how it parses this file. I've just been too lazy to mess with it... mostly because I'm alway plotting it seems.</p>
 
 <p>Save and exit.</p>
@@ -3202,23 +3552,35 @@ how it parses this file. I've just been too lazy to mess with it... mostly becau
 
 <h3 id="newtrx">newtrx.sh</h3>
 
-<p>newtrx.sh will handle will grab the last five transactions from <em>'chia wallet get_transactions'</em> and put the result into a file. Then we loop through each line in 
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#chiatx'>chiatx.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/newtrx.sh.txt' download='newtrx.sh'><b>newtrx.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The newtrx.sh script will grab the last five transactions from <em>'chia wallet get_transactions'</em> and put the result into a file. Then we loop through each line in 
 the file and identify each Transaction ID and check a history file to see if that Transaction ID is already in there. If it is not, then we run the <em>'chiatx.sh'</em> 
 Bash script. We will write that script next.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-101' >
+<button class='copybutton' onclick="copycode('codebox-101')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano newtrx.sh
+
 </pre>
 </code>
 
 <p>And this is the whole file:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-102' >
+<button class='copybutton' onclick="copycode('codebox-102')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 cd ~/chia-blockchain
@@ -3246,8 +3608,16 @@ while read line; do
 		fi
 	fi
 done &lt; ~/code/brighttree/.lastfivetrx
+
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>+</span></b> You can specify the format you want the date displayed by using the <b>+</b> symbol and then a format string. For example,  
+	<b>+"%Y%m%d %T"</b> will give us a date/time in the following format:  YYYYMMDD HH:MM:SS</p>
+</fieldset>
+</br>
 
 <p>Save and exit.</p>
 
@@ -3255,24 +3625,40 @@ done &lt; ~/code/brighttree/.lastfivetrx
 
 <h3 id="chiatx">chiatx.sh</h3>
 
-<p>chiatx.sh is called from newtrx.sh to handle transactions. The first parameter passed into the script is the Transaction ID identified in the <em>'newtrx.sh'</em> script. 
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#diskprice'>diskprice.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/chiatx.sh.txt' download='chiatx.sh'><b>chiatx.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The chiatx.sh script is called from <em>newtrx.sh</em> to handle transactions. The first parameter passed into the script is the Transaction ID identified in the <em>'newtrx.sh'</em> script. 
 That Transaction ID is used in the <em>'get_transaction'</em> Chia command to get more detail regarding the transaction. We also get the current XCH price from 
 <a href='https://coinmarketcap.com' target='_blank'>https://coinmarketcap.com</a>. We use all this transaction detail and the current price and build a new row to add to a CSV 
-file that keeps a history of transaction. We also send an email with that CSV file attached.</p>
+file that keeps a history of the transactions. We also send an email with that CSV file attached.</p>
+
+<p><b>Note:</b> the first time the <em>chiatx.sh</em> script runs, it will pull the last 5 transactions from your Chia Wallet and send you an email for each one. After it has added those 5 
+transactions to the <em>.trxhistory</em> file, then you should only receive email on new transactions. And again, you can always comment out the email line in the Bash script to 
+not receive email at all.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-103' >
+<button class='copybutton' onclick="copycode('codebox-103')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano chiatx.sh
+
 </pre>
 </code>
 
 <p>A lot of the code is similar to some of the previous Bash scripts so I'll just list the whole file here:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-104' >
+<button class='copybutton' onclick="copycode('codebox-104')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
@@ -3374,7 +3760,8 @@ else
 fi
 
 content=`curl -s https://coinmarketcap.com/currencies/chia-network/`
-curusd=`echo $content | cut -d'$' -f 6 | cut -d'&lt;' -f 1`
+curusd=`echo $content | cut -d '$' -f 6`
+curusd=`echo $curusd | cut -d '&lt;' -f 1`
 
 csv="chiatx.csv"
 echo "\"$transday\",\"$name\",$xch,$mojo,$curusd,\"$typedesc\",$txch,$tmojo,$pxch,$pmojo,$sxch,$smojo,$wallet_id,\"$confirmed\",$confirmed_at_height,$created_at_time,$fee_amount,$sent,\"$to_puzzle_hash\",\"$trade_id\""  &gt;&gt;~/code/brighttree/$csv
@@ -3385,6 +3772,15 @@ deactivate
 
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>cut</span></b>  command will allow you to get field(s) out of the input string by parsing it based on the specified delimiter. You will do 
+	this a lot with a space character as the delimiter.</p>
+</fieldset>
+</br>
+
+
 
 <p>Save and exit.</p>
 
@@ -3392,35 +3788,48 @@ deactivate
 
 <h3 id="diskprice">diskprice.sh</h3>
 
-<p>diskprice.sh is Bash script that scrapes the <a href='https://diskprice.com' target='_blank'>https://diskprice.com</a> website for the lowest priced 18 TB drive. We will display 
-that in the dashboard. This script is ran from a cronjob (we'll get to those as well) and the result is put into the database so our dashboard can pull in that data.</p>
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#chiadaily'>chiadaily.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/diskprice.sh.txt' download='diskprice.sh'><b>diskprice.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The diskprice.sh file is Bash script that scrapes the <a href='https://diskprice.com' target='_blank'>https://diskprice.com</a> website for the lowest priced 18 TB drive. We will display 
+that in the dashboard. This script is run from a cronjob (we'll get to those as well) and the result is put into the database so our dashboard can pull in that data.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-105' >
+<button class='copybutton' onclick="copycode('codebox-105')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano diskprice.sh
+
 </pre>
 </code>
 
 <p>The full file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-106' >
+<button class='copybutton' onclick="copycode('codebox-106')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
 page=`curl -s https://diskprices.com/?locale=us&amp;condition=new,used&amp;capacity=18-&amp;disk_types=external_hdd,external_hdd25,internal_hdd,internal_hdd25,internal_sshd,internal_sas,external_ssd,internal_ssd,m2_ssd,m2_nvme,u2`
 
-diskprice=`echo $page | html2text | grep "18 TB" | grep "HDD" | head -n 1 | tr '/$' '@' | tr ' ' ','`
+diskprice=`echo $page | html2text | grep "18 TB" | grep "HDD" | head -n 1 | tr '/$' '@' | tr ' ' ',' | cut -c1-150`
 
-curl -s http://192.168.1.135/brighttree/api/setdiskprice/diskprice/$diskprice
+curl -s http://192.168.1.135/api/setdiskprice/diskprice/$diskprice
 
 echo "Todays Best = $diskprice" &gt; ~/code/brighttree/.diskprice
 
 </pre>
 </code>
+</div>
 
 <p>Save and exit</p>
 
@@ -3428,23 +3837,35 @@ echo "Todays Best = $diskprice" &gt; ~/code/brighttree/.diskprice
 
 <h3 id="chiadaily">chiadaily.sh</h3>
 
-<p>chiadaily.sh creates a daily email report with a CSV file summarize plot counts and plot sizes. This script is ran from a cronjob also and the CSV we build is 
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#brighttreeinit'>brighttreeinit.sh file</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/chiadaily.sh.txt' download='chiadaily.sh'><b>chiadaily.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The chiadaily.sh script creates a daily email report with a CSV file summarizing plot counts and plot sizes. This script is run from a cronjob also and the CSV we build is 
 emailed out as a daily report. This is specific to my configuration. You will need to adjust to your configuration. Be sure to change the email address to your 
 email.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-107' >
+<button class='copybutton' onclick="copycode('codebox-107')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano chiadaily.sh
+
 </pre>
 </code>
 
 <p>The full file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-108' >
+<button class='copybutton' onclick="copycode('codebox-108')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
@@ -3489,42 +3910,42 @@ net=`chia farm summary | tail -n 3 | head -n 1 | cut --fields 4,5 --delimiter=\ 
 ttw=`chia farm summary | tail -n 2 | head -n 1 | cut --fields 2 --delimiter=: | xargs`
 
 # get counts of just the poolable plots
-jpool=$(curl -s http://192.168.1.135/brighttree/api/poolcount/jabba | jq -r '.data.pooled')
-tpool=$(curl -s http://192.168.1.135/brighttree/api/poolcount/tarkin | jq -r '.data.pooled')
-spool=$(curl -s http://192.168.1.135/brighttree/api/poolcount/starkiller | jq -r '.data.pooled')
-kpool=$(curl -s http://192.168.1.135/brighttree/api/poolcount/kinnakeet | jq -r '.data.pooled')
-lpool=$(curl -s http://192.168.1.135/brighttree/api/poolcount/lando | jq -r '.datapooled')
-vpool=$(curl -s http://192.168.1.135/brighttree/api/poolcount/vader | jq -r '.datapooled')
+jpool=$(curl -s http://192.168.1.135/api/poolcount/jabba | jq -r '.data.pooled')
+tpool=$(curl -s http://192.168.1.135/api/poolcount/tarkin | jq -r '.data.pooled')
+spool=$(curl -s http://192.168.1.135/api/poolcount/starkiller | jq -r '.data.pooled')
+kpool=$(curl -s http://192.168.1.135/api/poolcount/kinnakeet | jq -r '.data.pooled')
+lpool=$(curl -s http://192.168.1.135/api/poolcount/lando | jq -r '.datapooled')
+vpool=$(curl -s http://192.168.1.135/api/poolcount/vader | jq -r '.datapooled')
 
 # calculate the total count of pool plots
 totalpool=$(($jpool+$tpool+$spool+$kpool+$lpool+$vpool))
 
 # get status of harvesters
-jstat=$(curl -s http://192.168.1.135/brighttree/api/getstatus/jabba | jq -r '.data.status')
-tstat=$(curl -s http://192.168.1.135/brighttree/api/getstatus/tarkin | jq -r '.data.status')
-sstat=$(curl -s http://192.168.1.135/brighttree/api/getstatus/starkiller | jq -r '.data.status')
-kstat=$(curl -s http://192.168.1.135/brighttree/api/getstatus/kinnakeet | jq -r '.data.status')
-lstat=$(curl -s http://192.168.1.135/brighttree/api/getstatus/lando | jq -r '.data.status')
-vstat=$(curl -s http://192.168.1.135/brighttree/api/getstatus/vader | jq -r '.data.status')
+jstat=$(curl -s http://192.168.1.135/api/getstatus/jabba | jq -r '.data.status')
+tstat=$(curl -s http://192.168.1.135/api/getstatus/tarkin | jq -r '.data.status')
+sstat=$(curl -s http://192.168.1.135/api/getstatus/starkiller | jq -r '.data.status')
+kstat=$(curl -s http://192.168.1.135/api/getstatus/kinnakeet | jq -r '.data.status')
+lstat=$(curl -s http://192.168.1.135/api/getstatus/lando | jq -r '.data.status')
+vstat=$(curl -s http://192.168.1.135/api/getstatus/vader | jq -r '.data.status')
 
 # get plotting count of machines
-jplotting=$(curl -s http://192.168.1.135/brighttree/api/getplotting/jabba | jq -r '.data.creating')
-tplotting=$(curl -s http://192.168.1.135/brighttree/api/getplotting/tarkin | jq -r '.data.creating')
-splotting=$(curl -s http://192.168.1.135/brighttree/api/getplotting/starkiller | jq -r '.data.creating')
-kplotting=$(curl -s http://192.168.1.135/brighttree/api/getplotting/kinnakeet | jq -r '.data.creating')
-lplotting=$(curl -s http://192.168.1.135/brighttree/api/getplotting/lando | jq -r '.data.creating')
-vplotting=$(curl -s http://192.168.1.135/brighttree/api/getplotting/vader | jq -r '.data.creating')
+jplotting=$(curl -s http://192.168.1.135/api/getplotting/jabba | jq -r '.data.creating')
+tplotting=$(curl -s http://192.168.1.135/api/getplotting/tarkin | jq -r '.data.creating')
+splotting=$(curl -s http://192.168.1.135/api/getplotting/starkiller | jq -r '.data.creating')
+kplotting=$(curl -s http://192.168.1.135/api/getplotting/kinnakeet | jq -r '.data.creating')
+lplotting=$(curl -s http://192.168.1.135/api/getplotting/lando | jq -r '.data.creating')
+vplotting=$(curl -s http://192.168.1.135/api/getplotting/vader | jq -r '.data.creating')
 
 # calculate the total count of plotting processes
 totalplotting=$(($jplotting+$tplotting+$splotting+$kplotting+$lplotting+$vplotting))
 
 # get plotting status of machines
-jpstat=$(curl -s http://192.168.1.135/brighttree/api/getppercent/jabba | jq -r '.data.pstatus')
-tpstat=$(curl -s http://192.168.1.135/brighttree/api/getppercent/tarkin | jq -r '.data.pstatus')
-spstat=$(curl -s http://192.168.1.135/brighttree/api/getppercent/starkiller | jq -r '.data.pstatus')
-kpstat=$(curl -s http://192.168.1.135/brighttree/api/getppercent/kinnakeet | jq -r '.data.pstatus')
-lpstat=$(curl -s http://192.168.1.135/brighttree/api/getppercent/lando | jq -r '.data.pstatus')
-vpstat=$(curl -s http://192.168.1.135/brighttree/api/getppercent/vader | jq -r '.data.pstatus')
+jpstat=$(curl -s http://192.168.1.135/api/getppercent/jabba | jq -r '.data.pstatus')
+tpstat=$(curl -s http://192.168.1.135/api/getppercent/tarkin | jq -r '.data.pstatus')
+spstat=$(curl -s http://192.168.1.135/api/getppercent/starkiller | jq -r '.data.pstatus')
+kpstat=$(curl -s http://192.168.1.135/api/getppercent/kinnakeet | jq -r '.data.pstatus')
+lpstat=$(curl -s http://192.168.1.135/api/getppercent/lando | jq -r '.data.pstatus')
+vpstat=$(curl -s http://192.168.1.135/api/getppercent/vader | jq -r '.data.pstatus')
 
 # write fields to log
 log="chiadaily.csv"
@@ -3536,6 +3957,12 @@ deactivate
 
 </pre>
 </code>
+</div>
+
+</br><fieldset class='moreyouknow'><legend><img src="assets/TheMoreYouKnow.png" width="" height="" alt="The More You Know" /> The More You Know</legend>
+	<p><b><span class='symbol'>xargs</span></b> is a command that we used to trim whitespace from the input and return the trimmed string as output.</p>
+</fieldset>
+</br>
 
 <p>Save and exit.</p>
 
@@ -3543,143 +3970,169 @@ deactivate
 
 <h3 id="brighttreeinit">brighttree.init.sh</h3>
 
-<p>brighttree.init.sh is an initialization script. We will create it and then run it one time to create all the needed files.</p>
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#harvesterbackend'>BUILD THE HARVESTER</br>BASH BACKEND</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/brighttree.init.sh.txt' download='brighttree.init.sh'><b>brighttree.init.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The <em>brighttree.init.sh</em> file is an initialization script. We will create it and then run it one time to create all the needed files.</p>
 
 <p>Make sure you are in the project folder, and let's create the file:</p>
 
-<code>
+<code id='codebox-109' >
+<button class='copybutton' onclick="copycode('codebox-109')" title='Copy to clipboard'></button>
 <pre>
 cd ~/code/brighttree
 
 nano brighttree.init.sh
+
 </pre>
 </code>
 
 <p>The full file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-110' >
+<button class='copybutton' onclick="copycode('codebox-110')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
 cd ~/code/brighttree
 
 # initialize the log files
-touch curval.log
+touch .curval.log
 touch .brighttree.log
 
 # initialize the server files
-touch .jabbaplotcount
-touch .jabbaplotsize
-touch .jabbapoolcount
-touch .kinnakeetplotcount
-touch .kinnakeetplotsize
-touch .landoplotcount
-touch .landoplotsize
-touch .starkillerplotcount
-touch .starkillerplotsize
-touch .tarkinplotcount
-touch .tarkinplotsize
-touch .vaderplotcount
-touch .vaderplotsize
+echo 0 >.jabbaplotcount
+echo 0 >.jabbaplotsize
+echo 0 >.jabbapoolcount
+echo 0 >.kinnakeetplotcount
+echo 0 >.kinnakeetplotsize
+echo 0 >.kinnakeetpoolcount
+echo 0 >.landoplotcount
+echo 0 >.landoplotsize
+echo 0 >.landopoolcount
+echo 0 >.starkillerplotcount
+echo 0 >.starkillerplotsize
+echo 0 >.starkillerpoolcount
+echo 0 >.tarkinplotcount
+echo 0 >.tarkinplotsize
+echo 0 >.tarkinpoolcount
+echo 0 >.vaderplotcount
+echo 0 >.vaderplotsize
+echo 0 >.vaderpoolcount
 
 # initialize historical files
-touch .lastfivetrx
-touch .lastplottime
+echo 0 >.lastfivetrx
+echo 0 >.lastplottime
+echo 0 >.walletbalance
 touch .trxhistory
-touch .walletbalance
+touch .mypool.1.json
+touch .mypool.2.json
+touch .mypool.3.json
+touch .spacepool.1.json
+touch .spacepool.2.json
+touch .spacepool.3.json
 
 # initialize informational files
 touch .diskprice
 touch .drives
 
+# create chialogs subdirectory
+mkdir chialogs
+cd chialogs
+echo "" >> chia01.log
+
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
 <p>Now we want to execute the script by running this command:</p>
 
-<code>
+<code id='codebox-111' >
+<button class='copybutton' onclick="copycode('codebox-111')" title='Copy to clipboard'></button>
 <pre>
 sh brighttree.init.sh
+
 </pre>
 </code>
 
 <p>If you do a listing now, you will see it created the files.</p>
 
-<code>
+<code id='codebox-112' >
+<button class='copybutton' onclick="copycode('codebox-112')" title='Copy to clipboard'></button>
 <pre>
 ls
+
+</pre>
+</code>
+
+<p>We need to give our Bash scripts permission to be able to execute. We can do that with the following command:</p>
+
+<code id='codebox-135' >
+<button class='copybutton' onclick="copycode('codebox-135')" title='Copy to clipboard'></button>
+<pre>
+sudo chmod +x ~/code/brighttree/*.sh
+
 </pre>
 </code>
 
 </br>
 <hr>
-<h3 id="farmercron">Set up Bash scripts in Crontab</h3>
+<h2 id="harvesterbackend">BUILD THE HARVESTER BASH BACKEND <img src="assets/harvester.png" width="" height="" alt="" /></h2>
 <hr>
 
-<p>Now let's set up the scripts in crontab so they are run automatically for us.</p>
+<h3 id="harvesterweb">harvester.web.sh</h3>
 
-<p>Open crontab. You will need to choose your editor if you have't ever opened it before. I use nano.</p>
+<p>The <em>harvester.web.sh</em> script is the main Bash script for the Harvester computers that gathers data and uses curl to insert into the database. It is similar to the 
+<em>brighttree.web.sh</em> script but there are some differences between them since many of the Chia commands aren't available from a harverster machine.</p>
 
-<code>
-<pre>
-crontab -e
-</pre>
-</code>
-
-<p>If the MAILTO address isn't setup to send to you, you will want to change that to your email address so you get emails if something goes wrong. If running one of 
-these scripts is cauing a ton of email and you don't know why, you can comment the line out by using a <b>'#'</b> symbol as the first character on the line.</p>
-
-<p>Now add these lines to the bottom of the file. Be sure to replace the <em>'servername'</em> with your actual server name (the farmer that should be running this 
-dashboard). Below, I'll describe each line.</p>
-
-<code>
-<pre>
-* * * * * ~/brighttree/brighttree.web.sh &lt;servername&gt;
-*/5 * * * * ~/brighttree/currentvalue.sh
-*/5 * * * * ~/plotreport.sh
-0 0 * * * ~/brighttree/chiadaily.sh
-0 * * * * ~/brighttree/diskprice.sh
-</pre>
-</code>
-
-<p>The first line with <b>* * * * *</b> will run the brighttree.web.sh script every minute.</p>
-
-<p>The second line with <b>*/5 * * * *</b> will run the currentvalue.sh script every 5 minutes.</p>
-
-<p>The third line with <b>*/5 * * * *</b> will run the plotreport.sh script every 5 minutes.</p>
-
-<p>The fourth line with <b>0 0 * * *</b> will run the chiadaily.sh script at midnight.</p>
-
-<p>The fifth line with <b>0 * * * *</b> will run the diskprice.sh script every hour.</p>
-
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#dashboard'>THE DASHBOARD</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/harvester.web.sh.txt' download='harvester.web.sh'><b>harvester.web.sh</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>~/code/brighttree</em> folder (and update it with your edits),</br>then you can...</div>
+</fieldset></div>
 </br>
-<hr>
-<h2 id="harvesterbackend">BUILD THE HARVESTER BACKEND</h2>
-<hr>
 
 <p>If you don't have a harvester set up you don't need do this section, however I wrote a blog on setting up a harvester if you were interested. <a href='https://www.blogger.com/blog/post/edit/2744915235706291607/5463527043338285782' 
-target='_blank'>How to setup a Chia Harvester</a></p>
-
-<p>The basic structure of the harvester.web.sh file is the same as brighttree.web.sh with some of the code blocks removed since the harvester can run many Chia 
-commands. Since we've been through brighttree.web.sh already, I'll just list the harvester file out.</p>
+target='_blank'>How to set up a Chia Harvester</a></p>
 
 <p>Since this script is on the harvester computer, you will likely need to install a bunch of the "apt get" tools on this machine too.</p>
 
-<p>Make sure you are in the project directory, and let's create the file.</p>
+<p>You should also take the <em><a href='#brighttreeinit'>brighttree.init.sh</a></em> script you wrote, set it up on the harvester, and run it. This will create the needed files and subdirectory.</p>
 
-<code>
+<p>You need to make a project directory on this harvester, then change into that directory to create the file.</p>
+
+<code id='codebox-115' >
+<button class='copybutton' onclick="copycode('codebox-115')" title='Copy to clipboard'></button>
 <pre>
+cd ~
+
+mkdir code
+
+cd code
+
+mkdir brighttree
+
 cd ~/code/brighttree
 
 nano harvester.web.sh
+
 </pre>
 </code>
 
 <p>The full file listing:</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-116' >
+<button class='copybutton' onclick="copycode('codebox-116')" title='Copy to clipboard'></button>
 <pre>
 #!/bin/bash
 
@@ -3696,7 +4149,7 @@ echo "server = $1" &gt;&gt;~/code/brighttree/.brighttree.log
 #update creating for MADMAX
 creating=`ps e -C "chia_plot" | grep -c "chia_plot"`
 echo "creating = $creating" &gt;&gt;~/code/brighttree/.brighttree.log
-curl -s http://192.168.1.135/brighttree/api/setcreating/$1/$creating &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setcreating/$1/$creating &gt;&gt;~/code/brighttree/.brighttree.log
 
 # get plot count and check to see if it's different from the last count. Email if so, also update the db.
 #count=`chia farm summary | grep 'Plot count' | cut --fields 3 --delimiter=\ `
@@ -3706,8 +4159,8 @@ curl -s http://192.168.1.135/brighttree/api/setcreating/$1/$creating &gt;&gt;~/c
 #lastcount=`cat ~/code/brighttree/.plotcount`
 #if [ $count -gt $lastcount ]; then
 #       echo $count &gt;~/code/brighttree/.plotcount
-#       curl -s http://192.168.1.135/brighttree/api/addplot/$1 &gt;&gt;~/code/brighttree/.brighttree.log
-#       curl -s http://192.168.1.135/brighttree/api/setsize/$1/$size &gt;&gt;~/code/brighttree/.brighttree.log
+#       curl -s http://192.168.1.135/api/addplot/$1 &gt;&gt;~/code/brighttree/.brighttree.log
+#       curl -s http://192.168.1.135/api/setsize/$1/$size &gt;&gt;~/code/brighttree/.brighttree.log
 #fi
 
 # get counts of just the poolable plots - TARKIN
@@ -3727,9 +4180,9 @@ tssdta=`find /mnt/ssd-ta/spacepool/ -name "*.plot" | wc -l`
 t_poolplots=$(($text1+$text2+$text3+$text4+$text5+$text6+$text7+$text8+$text9+$thdd_1+$tssdtb+$tssdta+$thdd23))
 echo "$1 pooled = $t_poolplots" &gt;&gt;~/code/brighttree/.brighttree.log
 tarkin_lastpool=`cat ~/code/brighttree/.tarkinpoolcount`
-if [ $t_poolplots -ne $tarkin_lastpool ]; then
+if [[ $t_poolplots -ne $tarkin_lastpool ]]; then
         echo $t_poolplots &gt;~/code/brighttree/.tarkinpoolcount
-        curl -s http://192.168.1.135/brighttree/api/setpooled/tarkin/$t_poolplots &gt;&gt;~/code/brighttree/.brighttree.log
+        curl -s http://192.168.1.135/api/setpooled/tarkin/$t_poolplots &gt;&gt;~/code/brighttree/.brighttree.log
 fi
 
 # update the db with the chia status for this server
@@ -3743,14 +4196,14 @@ else
         status="unknown"
 fi
 echo "status = $status" &gt;&gt;~/code/brighttree/.brighttree.log
-curl -s http://192.168.1.135/brighttree/api/setstatus/$1/$status &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setstatus/$1/$status &gt;&gt;~/code/brighttree/.brighttree.log
 
 # update the db with the install version of chia
 ver=`chia version`
-curl -s http://192.168.1.135/brighttree/api/setversion/$1/$ver &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setversion/$1/$ver &gt;&gt;~/code/brighttree/.brighttree.log
 
 # get the phase of each running plotting process (if possible), send to db
-pstatus=`bash ~/code/brighttree/runstat.sh ~/madmaxplot.sh $1`
+pstatus=`bash ~/code/brighttree/runstat.sh ~/code/brighttree/madmaxplot.sh $1 | xargs`
 echo "phase = $pstatus" &gt;&gt;~/code/brighttree/.brighttree.log
 # current run summary, merge with the phase status
 #runsum=`grep -i "total time" ~/chialogs/*.log | awk '{sum=sum+$4} {avg=sum/NR} {tday=86400/avg*12*101.366/1024} END {printf "%d:%0.1f:%0.2f", NR, avg, tday}'`
@@ -3764,16 +4217,16 @@ pstatsum="$pstatus&lt;br&gt;$runsum"
 echo "pstatsum = $pstatsum" &gt;&gt;~/code/brighttree/.brighttree.log
 
 # merged phases status and run summary
-curl -s http://192.168.1.135/brighttree/api/setpstatus/$1/$pstatsum &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setpstatus/$1/$pstatsum &gt;&gt;~/code/brighttree/.brighttree.log
 
 # get drives info and put into BrightTree DB
 #drives=`df -h -t ext4 --output=target,avail | grep "/" | cut --fields 3 --delimiter=\/ | tr ' ' '_' | tr '\n' '|'`
 drives=`df -h -t ext4 --output=target,avail | grep "/" | cut --fields 3 --delimiter=\/ | tr ' ' '_' | tr '\n' '|' &amp;&amp; df -h -t fuseblk --output=target,avail | grep "/" | cut --fields 3 --delimiter=\/ | tr ' ' '_' | tr '\n' '|'`
-curl -s http://192.168.1.135/brighttree/api/setdrives/$1/$drives &gt;&gt;~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setdrives/$1/$drives &gt;&gt;~/code/brighttree/.brighttree.log
 echo "drives = $drives" &gt;~/code/brighttree/.drives
 
 # check BrightTree DB for any actions
-action=`curl -s http://192.168.1.135/brighttree/api/getaction/$1`
+action=`curl -s http://192.168.1.135/api/getaction/$1`
 action_id=$(echo $action | jq -r '.data[0].id')
 action_name=$(echo $action | jq -r '.data[0].action')
 action_target=$(echo $action | jq -r '.data[0].itemid')
@@ -3821,7 +4274,7 @@ if [ $action_name == "dp" ]; then
             rm "$(ls -t /mnt/ssd-ta/*.plot | tail -1)"
             ;;
     esac
-    curl -s http://192.168.1.135/brighttree/api/actiondone/$action_id
+    curl -s http://192.168.1.135/api/actiondone/$action_id
 fi
 
 # stop the python virtual environment for chia
@@ -3830,76 +4283,80 @@ echo "" &gt;&gt;~/code/brighttree/.brighttree.log
 
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
+<!-- The user will need to be Harvester versions of plotreport.sh, runstat.sh, percent.sh, madmaxplot.sh -->
+<p>If you have a harvester, you will need to build each of these Bash scripts for the harvester. The basic stucture is all the same, but you'll need to adjust the configuration 
+to you harvester's setup. For instance, the plotreport.sh will need to be set up with the drives from the harvester, not your farmer. Its mostly a repeat so I'll simply provide 
+links back to those sections you can follow.</p>
+
+<div>
+	<div class='harvesterfiles'><a href='#plotreport'>plotreport.sh</a></div>
+	<div class='harvesterfiles'><a href='#runstat'>runstat.sh</a></div>
+	<div class='harvesterfiles'><a href='#percent'>percent.sh</a> *</div>
+	<div class='harvesterfiles'><a href='#madmaxplot'>madmaxplot.sh</a></div>
+	<p><b>*</b> This one is exactly the same, no changes necessary.</p>
+	
+</div>
 </br>
-<hr>
-<h3 id="harvestercron">Setup Bash scripts in Crontab</h3>
-<hr>
 
-<p>Now let's set up the scripts in crontab so they are run automatically for us.</p>
+<p>We need to give our Bash scripts permission to be able to execute. Just like we did on the farmer, we can do that with the following command:</p>
 
-<p>Open crontab. </p>
-
-<code>
+<code id='codebox-136' >
+<button class='copybutton' onclick="copycode('codebox-136')" title='Copy to clipboard'></button>
 <pre>
-crontab -e
+sudo chmod +x ~/code/brighttree/*.sh
+
 </pre>
 </code>
 
-<p>If the <em>MAILTO</em> address isn't setup to send to you, you will want to change that to your email address so you get emails if something goes wrong. If running one 
-of these scripts is cauing a ton of email and you don't know why, you can comment the line out by using a '#' symbol as the first character on the line.</p>
-
-<p>Now add these lines to the bottom of the file. Be sure to replace the <em>'servername'</em> with your actual server name (the harvester that should be running this 
-dashboard). Below, I'll describe each line.</p>
-
-<code>
-<pre>
-* * * * * ~/code/brighttree/harvester.web.sh &lt;servername&gt;
-*/5 * * * * ~/code/brighttree/plotreport.sh
-</pre>
-</code>
-
-<p>The first line with <b>* * * * *</b> will run the harvester.web.sh script every minute.</p>
-
-<p>The second line with <b>*/5 * * * *</b> will run the plotreport.sh script every 5 minutes.</p>
-
 </br>
 <hr>
-<h3 id="dashboard">THE DASHBOARD</h3
+<h3 id="dashboard">THE DASHBOARD <img src="assets/dashboard.png" width="" height="" alt="" /></h3>
 <hr>
 
-<p>index.php is the actual dashboard php code. We created a sample index.php early on as a test, but we'll add everything to it now. The dashboard uses Bootstrap 
-and Google Fonts.</p>
- 
-More info on <a href='https://bootstrap.com' target='_blank'>Bootstrap</a>. More info on <a href='https://fonts.google.com' target='_blank'>Google Fonts</a>. 
-Everything you need is already in the script we will add, those links are just for reference if you want more info.
+</br><div>
+	<div class='right skip'>Skip to<br><a href='#farmercron'>Set up Farmer Bash</br>scripts in Crontab</a></div>
+	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
+	<div class='left'><p>You can download the full code <a href='source/index.php.txt' download='index.php'><b>index.php</b></a> or you can follow along and we'll build it as we go.
+	If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder, then you can...</div>
+</fieldset></div>
+</br>
+
+<p>The index.php file is the actual dashboard php code. We created a sample index.php early on as a test, but we'll add everything to it now. The dashboard uses 
+<a href='https://bootstrap.com' target='_blank'>Bootstrap</a> and <a href='https://fonts.google.com' target='_blank'>Google Fonts</a>. Everything you need is already in the script 
+we will add, those links are just for reference if you want more info.</p>
 
 <h3 id="index">index.php</h3>
 
 <p>We will need to change back into our site directory first:</p>
 
-<code>
+<code id='codebox-119' >
+<button class='copybutton' onclick="copycode('codebox-119')" title='Copy to clipboard'></button>
 <pre>
 cd /var/www/brighttree/public_html
+
 </pre>
 </code>
 
-<p>And then open the _index.php_ file.</p>
+<p>And then open the <em>index.php</em> file.</p>
 
-<code>
+<code id='codebox-120' >
+<button class='copybutton' onclick="copycode('codebox-120')" title='Copy to clipboard'></button>
 <pre>
 nano index.php
+
 </pre>
 </code>
 
-<p><b>Choose your own Adventure:</b> you can download the full code <b><a href='source/index.php.txt' download='index.php'>index.php</a></b> or you can follow along and we'll build 
-it as we go. If you download the file and save it to the <em>/var/www/brighttree/public_html</em> folder.</p>
+<p>It would probably be the easiest to just delete everything in the file currently. In <b>nano</b>, you can use the <b>Ctrl-K</b> keystroke to '<em>cut</em>' a line. We aren't going
+to paste it, so basically you're just deleting the line. Then start the code by adding in our php start tag and pull in the data.php and dbconfig.php files.</p>
 
-<p>If your still here reading, then we'll start the code by adding in our php start tag and pull in the data.php and dbconfig.php files.</p>
-
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-121' >
+<button class='copybutton' onclick="copycode('codebox-121')" title='Copy to clipboard'></button>
 <pre>
 &lt;?php
 require "data.php";
@@ -3907,10 +4364,13 @@ require "dbconfig.php";
 
 </pre>
 </code>
+</div>
 
-<p>The next section call three functions which complete the page. The rest of the file will contain different functions that these three main ones call.</p>
+<p>The next section calls three functions which complete the page. The rest of the file will contain different functions that these three main ones call.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-122' >
+<button class='copybutton' onclick="copycode('codebox-122')" title='Copy to clipboard'></button>
 <pre>
 build_page_top();
 build_page_body();
@@ -3922,11 +4382,14 @@ build_page_bottom();
 
 </pre>
 </code>
+</div>
 
-<p>Here is the first function _build_page_top()_. Most of the function is written out side of the PHP tags and in HTML/CSS. If you see <em>'&lt;?=$variable?&gt;'</em> 
+<p>Here is the first function <em>build_page_top()</em>. Most of the function is written out side of the PHP tags and in HTML/CSS. If you see <em>'&lt;?=$variable?&gt;'</em> 
 in the code that is shorthand for the PHP start and end tags and will echo out the $variable back to that spot in the webpage.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-123' >
+<button class='copybutton' onclick="copycode('codebox-123')" title='Copy to clipboard'></button>
 <pre>
 function build_page_top() {
 ?&gt;
@@ -4030,13 +4493,16 @@ function build_page_top() {
 
 </pre>
 </code>
+</div>
 
 <p>The Bootstrap <em>&lt;link&gt;</em> tag needs to be the last thing before the <em>&lt;/head&gt;</em> tag.</p>
 
 <p>Next up is the <em>build_page_body()</em> function. This function calls two more that you will write next. <em>build_sidebar()</em> which is for the left bar of the 
-dashboard, and <em>build_serverblock()</em> which is for the main content portion will all the server and drive info.</p>
- 
-<code>
+dashboard, and <em>build_serverblock()</em> which is for the main content portion will build all the server and drive info.</p>
+
+ <div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-124' >
+<button class='copybutton' onclick="copycode('codebox-124')" title='Copy to clipboard'></button>
 <pre>
 function build_page_body() {
 ?&gt;
@@ -4044,8 +4510,8 @@ function build_page_body() {
 
 	&lt;div class='container-fluid'&gt;
 		&lt;div class="row"&gt;
-			&lt;div class='col-lg-6 col-xs-12 col-sm-12 col-md-12 name-comp'&gt;COMPANY_NAME&lt;/div&gt;
-			&lt;div class='col-lg-6 col-xs-12 col-sm-12 col-md-12 name-tool'&gt;BrightTree&lt;/div&gt;
+			&lt;div class='col-lg-6 col-xs-12 col-sm-12 col-md-12 name-comp'&gt;BrightTree&lt;/div&gt;
+			&lt;div class='col-lg-6 col-xs-12 col-sm-12 col-md-12 name-tool'&gt;Chia Dashboard&lt;/div&gt;
 		&lt;/div&gt;
 		
 		&lt;div class='row'&gt;
@@ -4068,14 +4534,18 @@ function build_page_body() {
 &lt;/body&gt;
 &lt;?php
 }
+
 </pre>
 </code>
+</div>
 
 <p>The three <em>&lt;script&gt;</em> tags must be the last thing before the <em>&lt;/body&gt;</em> tag and they must be in that sequence for Bootstrap/jQuery to work right.</p>
 
 <p>The next block is the <em>build_page_bottom()</em> function and it simply closes the html tag.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-125' >
+<button class='copybutton' onclick="copycode('codebox-125')" title='Copy to clipboard'></button>
 <pre>
 function build_page_bottom() {
 ?&gt;
@@ -4085,11 +4555,14 @@ function build_page_bottom() {
 
 </pre>
 </code>
+</div>
 
 <p>The next block of code will get the list of servers and info about them and start building the HTML for the server drive list by calling the next function 
 <em>build_server</em> for each server.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-126' >
+<button class='copybutton' onclick="copycode('codebox-126')" title='Copy to clipboard'></button>
 <pre>
 function build_serverblock() {
 
@@ -4146,10 +4619,13 @@ function build_serverblock() {
 
 </pre>
 </code>
+</div>
 
 <p>The next code block will build a summary of current plotting processes and return the summary to the calling function.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-127' >
+<button class='copybutton' onclick="copycode('codebox-127')" title='Copy to clipboard'></button>
 <pre>
 function build_plotsummary($pstatus) {
 	
@@ -4201,12 +4677,15 @@ function build_plotsummary($pstatus) {
 
 </pre>
 </code>
+</div>
 
 <p>The next code block will make the sidebar. This displays the Pool information, totals for plot counts and sizes, Estimated Time to Win values from Chia 
 and the pool. Amount paid from pool, and amount earned but not paid out yet. Plus wallet info for both Chia and its fork HDDcoin. I recently added in at the 
 bottom the current best deal on 18 TB drives listed on <a href='https://diskprices.com' target='_blank'>https://diskprices.com</a>.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-128' >
+<button class='copybutton' onclick="copycode('codebox-128')" title='Copy to clipboard'></button>
 <pre>
 function build_sidebar() {
 
@@ -4256,22 +4735,25 @@ function build_sidebar() {
 
 </pre>
 </code>
+</div>
 
 <p>The next code block will build the list of drives and NFT plot count. The database is storing OG plot count as well, but I am no longer displaying that 
 in the dashboard since I don't have any OG plots left.</p>
 
 <p>I also have a case-statement that is shortening some of the drive names so I can fit all 6 of my servers on the screen without needing to scroll. You can 
 remove that chuck since you won't have the same drive name, or you can adapt it for your drives if you also have some names that are long and want to give 
-them a shortname for displaying.</p>
+them a short name for displaying.</p>
 
-<p>There are several _explode_ commands that breaks apart the $plotreport variable. The first explode is split by the tilde <b>~</b> symbol. The left side is the 
-OG plot, the right side is the NFT plot. The second explode is split by the pipe <b>|</b> symbol. Each split represents a drive on the server. And finally the 
-third explode is split by the colon <b>:</b> symbol. The left side is the drive name and the right side is the plot count.</p>
+<p>There are several <em>explode</em> commands that break apart the $plotreport variable. The first <em>explode</em> is split by the tilde <b>~</b> symbol. The left side is the 
+OG plot, the right side is the NFT plot. The second exp<em></em>lode is split by the pipe <b>|</b> symbol. Each split represents a drive on the server. And finally the 
+third <em>explode</em> is split by the colon <b>:</b> symbol. The left side is the drive name and the right side is the plot count.</p>
  
-<p>The progress color is based on the calucated percent the drive is full. Red is full, blue is partially filled, yellow is partially filled and currently 
+<p>The progress color is based on the calculated percent the drive is full. Red is full, blue is partially filled, yellow is partially filled and currently 
 plotting.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-129' >
+<button class='copybutton' onclick="copycode('codebox-129')" title='Copy to clipboard'></button>
 <pre>
 function build_server($server_name, $pstatus = "") {
 
@@ -4343,12 +4825,15 @@ function build_server($server_name, $pstatus = "") {
 
 </pre>
 </code>
+</div>
 
 <p>The next code block will use the given drive name to parse through the server drives and find the size for the specific drive, then return that size. Know 
 that due to issue handling spacing with Bash, I converted spaces to underscores and so there are a bunch of string replace statements to replace all the 
 underscores with one single color.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-130' >
+<button class='copybutton' onclick="copycode('codebox-130')" title='Copy to clipboard'></button>
 <pre>
 function size_from_serverdrives($drive,$serverdrives) {
 	/*
@@ -4383,10 +4868,13 @@ function size_from_serverdrives($drive,$serverdrives) {
 
 </pre>
 </code>
+</div>
 
 <p>The next block is a bunch of functions that we use to get the data from the database then return the value to the caller.</p>
 
-<code>
+<div class='nano'><span class='nano-title'>GNU nano 4.8</span>
+<code id='codebox-131' >
+<button class='copybutton' onclick="copycode('codebox-131')" title='Copy to clipboard'></button>
 <pre>
 function get_pool_rank() {
 	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
@@ -4564,46 +5052,157 @@ function get_farmsummary() {
 	mysqli_close($link);
 	return $farmsummary;
 }
+
 </pre>
 </code>
+</div>
 
 <p>Save and exit.</p>
 
+</br>
+<hr>
+<h3 id="crontab">CRONTAB SETUP <img src="assets/crontab.png" width="" height="" alt="" /></h3>
 <hr>
 
-<h1 id="theend">END OF WALKTHROUGH</h1>
+<p>The last steps we want to complete is setting up the Bash scripts to autorun using Crontab. If you set these up before all the other files are created, you will have issues.
+If you do have issues and email seems to be overwhelming, you can always comment out our additions below by place a hashtag '#' as the first character on the line in Crontab
+to comment it out so it does execute. That will give you time to read the email, evaluate the issue, review/edit code, etc.</p>
+
+</br>
+<hr>
+<h3 id="farmercron">Set up Farmer Bash scripts in Crontab</h3>
 <hr>
 
-<h1 id="bugs">KNOWN BUGS</h1>
+<p>Now let's set up the scripts in crontab so they are run automatically for us.</p>
+
+<p>Open crontab. You will need to choose your editor if you have't ever opened it before. I use nano.</p>
+
+<code id='codebox-113' >
+<button class='copybutton' onclick="copycode('codebox-113')" title='Copy to clipboard'></button>
+<pre>
+crontab -e
+
+</pre>
+</code>
+
+<p>If the MAILTO address isn't set up to send to you, you will want to change that to your email address so you get emails if something goes wrong. If running one of 
+these scripts is causing a ton of email and you don't know why, you can comment the line out by using a <b>'#'</b> symbol as the first character on the line.</p>
+
+<p>Now add these lines to the bottom of the file. Be sure to replace the <b>servername</b> with your actual server name (the farmer that should be running this 
+dashboard). Below, I'll describe each line.</p>
+
+<code id='codebox-114' >
+<button class='copybutton' onclick="copycode('codebox-114')" title='Copy to clipboard'></button>
+<pre>
+* * * * * ~/code/brighttree/brighttree.web.sh &lt;servername&gt;
+*/5 * * * * ~/code/brighttree/currentvalue.sh
+*/5 * * * * ~/code/brighttree/plotreport.sh
+0 0 * * * ~/code/brighttree/chiadaily.sh
+0 * * * * ~/code/brighttree/diskprice.sh
+
+</pre>
+</code>
+
+<p>The first line with <b>* * * * *</b> will run the brighttree.web.sh script every minute.</p>
+
+<p>The second line with <b>*/5 * * * *</b> will run the currentvalue.sh script every 5 minutes.</p>
+
+<p>The third line with <b>*/5 * * * *</b> will run the plotreport.sh script every 5 minutes.</p>
+
+<p>The fourth line with <b>0 0 * * *</b> will run the chiadaily.sh script at midnight.</p>
+
+<p>The fifth line with <b>0 * * * *</b> will run the diskprice.sh script every hour.</p>
+
+<p><b>Note:</b> the first time the <em>brighttree.web.sh</em> script runs and it calls <em>newtx.sh</em> which then calls <em>chiatx.sh</em>, it will pull the last 5 transactions from your Chia Wallet and send you an email for
+each one. After it has added those 5 transactions to the <em>.trxhistory</em> file, then you should only receive email on new transactions. And again, you can always comment out
+the email line in the Bash script to not receive email at all.</p>
+
+</br>
+<hr>
+<h3 id="harvestercron">Set up Harvester Bash scripts in Crontab</h3>
+<hr>
+
+<p>Now let's set up the scripts in crontab so they are run automatically for us.</p>
+
+<p>Open crontab. </p>
+
+<code id='codebox-117' >
+<button class='copybutton' onclick="copycode('codebox-117')" title='Copy to clipboard'></button>
+<pre>
+crontab -e
+
+</pre>
+</code>
+
+<p>If the <em>MAILTO</em> address isn't set up to send to you, you will want to change that to your email address so you get emails if something goes wrong. If running one 
+of these scripts is causing a ton of email and you don't know why, you can comment the line out by using a '#' symbol as the first character on the line.</p>
+
+<p>Now add these lines to the bottom of the file. Be sure to replace the <em>'servername'</em> with your actual server name (the harvester that should be running this 
+dashboard). Below, I'll describe each line.</p>
+
+<code id='codebox-118' >
+<button class='copybutton' onclick="copycode('codebox-118')" title='Copy to clipboard'></button>
+<pre>
+* * * * * ~/code/brighttree/harvester.web.sh &lt;servername&gt;
+*/5 * * * * ~/code/brighttree/plotreport.sh
+
+</pre>
+</code>
+
+<p>The first line with <b>* * * * *</b> will run the harvester.web.sh script every minute.</p>
+
+<p>The second line with <b>*/5 * * * *</b> will run the plotreport.sh script every 5 minutes.</p>
+
+<hr>
+<h1 id="theend">END OF WALKTHROUGH <img src="assets/end.png" width="" height="" alt="" /></h1>
+<hr>
+
+<p>We've reached the end of your adventure. How did you do? Is the dashboard working for you? <a href='http://192.168.1.135/' target='_blank'>Let's see!</a></p>
+
+
+</br>
+<hr>
+<h1 id="bugs">KNOWN BUGS <img src="assets/bug.png" width="" height="" alt="" /></h1>
+<hr>
 	
 <p>I'm using this dashboard daily. It works, but there are issues that I have just been living with for the time being. I will list some of the more obvious ones.</p>
 
 <ul>
 	<li>The chiatx.csv historical file has started getting unwanted data due to scraping the price from the CoinMarketCap website. Originally it worked fine but at some point they changed 
-	the formating of their site and the scrap isn't handling that gracefully. Workaround - I've been manually editing the chiatx.csv file each day after it's updated. I usually know the 
+	the formatting of their site and the scrap isn't handling that gracefully. Workaround - I've been manually editing the chiatx.csv file each day after it's updated. I usually know the 
 	approximate time I will have a new transaction since I'm in a pool and getting basically a payout every 24.5 hours. </li>
 	<li>chiadaily.sh script is prone to label servers with the wrong plot count after a Chia upgrade. The sequence of harvesters sometimes changes in the farm summary and the method
 	used to get the values is simply counting lines, not based on finding the correct IP address first.</li>
 </ul>
 
-<h1 id="realizations">REALIZATIONS</h1>
+</br>
+<hr>
+<h1 id="realizations">REALIZATIONS <img src="assets/innovation.png" width="" height="" alt="" /></h1>
+<hr>
 
 <p>During putting this Walkthrough together, I looked at code that was written months ago. I see a lot of changes that could be made to improve and simplify the code. I will probably go 
 back and do a total rewrite of the application and clean up the code a lot. I'd like to pull all the servers/drives specific configuration into one config file that all the scripts could 
 access and keep from having to rewrite code. Just update the config with your servers/drives instead. Maybe even develop a way for the drive configuration to be built automatically by 
-scanning drives for *.plot files? Just think outloud here... </p>
+scanning drives for *.plot files? Just thinking out loud here... </p>
 
-<h1 id="responsive">RESPONSIVE WEB DESIGN</h1>
+</br>
+<hr>
+<h1 id="responsive">RESPONSIVE WEB DESIGN <img src="assets/responsive-design.png" width="" height="" alt="" /></h1>
+<hr>
 
 <p>I never mentioned it in the Walkthrough but we're using Bootstrap so you can view on a mobile device or tablet and it should still be readable. So you can look at the dashboard on your 
 phone while you're watching TV in the living room.</p>
 
-<h1 id="autostart">AUTO START FARMING AND HARVESTING PROCESSES</h1>
+</br>
+<hr>
+<h1 id="autostart">AUTO START FARMING AND HARVESTING PROCESSES <img src="assets/start.png" width="" height="" alt="" /></h1>
+<hr>
 
-<p>I think I have setup on each server is an entry in crontab to immediate start the farmer/harvester back up at boot up. This keeps me from having to do it if the server is restarted for 
+<p>One thing I have set up on each server is an entry in crontab to immediately start the farmer/harvester back up at boot up. This keeps me from having to do it if the server is restarted for 
 some reason.</p>
 
-<code>
+<code id='codebox-132' >
+<button class='copybutton' onclick="copycode('codebox-132')" title='Copy to clipboard'></button>
 <pre>
 # For a Chia farmer
 @reboot cd ~/chia-blockchain &amp;&amp; . ./activate &amp;&amp; chia start farmer
@@ -4620,11 +5219,15 @@ some reason.</p>
 </pre>
 </code>
 
-<h1 id="installuseful">OTHER USEFUL SOFTWARE PACKAGES</h1>
+</br>
+<hr>
+<h1 id="installuseful">OTHER USEFUL SOFTWARE PACKAGES <img src="assets/useful.png" width="" height="" alt="" /></h1>
+<hr>
 
-<p>If you want to also install the packages I founds useful, you can run the install commands below.</p>
+<p>If you want to also install the packages I found useful, you can run the install commands below.</p>
 
-<code>
+<code id='codebox-133' >
+<button class='copybutton' onclick="copycode('codebox-133')" title='Copy to clipboard'></button>
 <pre>
 sudo apt install glances
 
@@ -4637,23 +5240,16 @@ sudo apt install screen
 </pre>
 </code>
 
-<h1 id="todo">|||||||||||||||||||||| STILL NEED TODO ||||||||||||||||||||||</h1>
-<ul>
-	<li>Find good places for more images. I think images can help explain points better so if that are place that it makes sense, you will need to create some screen shots.</li>
-	<li>Add The More You Know tips into the Walkthrough</li>
-	<li>Choose Your Own Adventure</li>
-	<li>Follow Along Technical Review</li>
-	<li>PROOF READING</li>
-	<li>Formating Review</li>
-</ul>
-
+</br>
+<hr>
+<h2 id="done"><img src="assets/treehouse.png" width="35px" height="" alt="" /> And We Are Done <img src="assets/treehouse.png" width="35px" height="" alt="" /></h2>
 <hr>
 
-<h2 id="done">And We Are Done</h2>
-
-<p>I hope you had fun and find this useful.</p>
-
-<p><em>Feedback is always welcome.</em> <img src="assets/signature.png" width="" height="" alt="Steve Stepp" /></p>
+<div class='goodbye'>	
+	<p>I hope you had fun and find this useful.</p>
+	<p><em>Feedback is always welcome.</em></p>
+	<p><img src="assets/signature.png" width="" height="" alt="Steve Stepp" /></p>
+</div>
 
 <!-- |||||||||||||||||||||||||||||||||||||| END BLOG POST CONTENT |||||||||||||||||||||||||||||||||||||| -->
 
@@ -4664,27 +5260,27 @@ sudo apt install screen
                 <!-- Side widgets-->
                 <div class="col-lg-4">
 
-                <!-- Side widget-->
-                <div class="card mb-4">
-                    <div class="card-header">Disclaimer</div>
-                    <div class="card-body">
-	                    <p>This is provided for fun. And free. No copyright.</br>Do with it as you see fit. But use at your own risk.</p>
-					</div> <!-- card-body -->
-				</div> <!-- card mb-4 -->
-	                
-				<!-- Side widget -->
-				<div class="card mb-4">
-					<div class="card-header">Table of Contents</div>
-					<div class="card-body">
+	                <!-- Side widget-->
+	                <div class="card mb-4">
+	                    <div class="card-header">Disclaimer <p class='sidebaricon'><img src="assets/warning.png" width="" height="" alt="" /></p></div>
+	                    <div class="card-body">
+		                    <p>This is provided for fun. And free. No copyright.</br>Do with it as you see fit, but use at your own risk.</p>
+						</div> <!-- card-body -->
+					</div> <!-- card mb-4 -->
+		                
+					<!-- Side widget -->
+					<div class="card mb-4">
+						<div class="card-header">Table of Contents <p class='sidebaricon'><img src="assets/toc.png" width="" height="" alt="" /></p></div>
+						<div class="card-body">
 <!-- Table of Contents -->
 <ul>
-	<li><a href="#title">Builing a Chia Dash Board on Linux - A Walkthrough</a>
+	<li><a href="#title">Building a Chia Dash Board on Linux - A Walkthrough</a>
 		<ul>
 			<li><a href="#brighttree">BrightTree Name</a></li>
 			<li><a href="#assumptions">Assumptions</a></li>
 			<li><a href="#used">Software We Use</a></li>
 			<li><a href="#useful">Other Useful Software</a></li>
-			<li><a href="#project">CREATE PROJECT FOLDER</a></li>
+			<li><a href="#project">CREATE PROJECT DIRECTORY</a></li>
 			<li><a href="#software">INSTALLING SOFTWARE</a>
 				<ul>
 					<li><a href="#packages">Installing needed software packages</a></li>
@@ -4716,7 +5312,7 @@ sudo apt install screen
 				<li><a href="#brighttreeweb">brighttree.web.sh file</a></li>
 					<li><a href="#runstat">runstat.sh file</a></li>
 					<li><a href="#currentvalue">currentvalue.sh file</a></li>
-					<li><a href="#setplotscount">setplotscount.php file</a></li>
+					<li><a href="#setplotcounts">setplotcounts.php file</a></li>
 					<li><a href="#plotreport">plotreport.sh file</a></li>
 					<li><a href="#percent">percent.sh file</a></li>
 					<li><a href="#madmaxplot">madmaxplot.sh file</a></li>
@@ -4725,17 +5321,21 @@ sudo apt install screen
 					<li><a href="#diskprice">diskprice.sh file</a></li>
 					<li><a href="#chiadaily">chiadaily.sh file</a></li>
 					<li><a href="#brighttreeinit">brighttree.init.sh file</a></li>
-					<li><a href="#farmercron">Set up farmer Bash scripts in Crontab</a></li>
 				</ul>
 			</li>
 			<li><a href="#harvesterbackend">BUILD THE HARVESTER BASH BACKEND</a>
 				<ul>
 					<li><a href="#harvesterweb">harvester.web.sh file</a></li>
-					<li><a href="#harvestercron">Set up harvester Bash scripts in Crontab</a></li>
 				</ul>
 			</li>
 			<li><a href="#dashboard">THE DASHBOARD</a>
 				<ul><li><a href="#index">index.php</a></li></ul>
+			</li>
+			<li><a href="#crontab">CRONTAB SETUP</a>
+				<ul>
+					<li><a href="#farmercron">Set up farmer Bash scripts in Crontab</a></li>
+					<li><a href="#harvestercron">Set up harvester Bash scripts in Crontab</a></li>
+				</ul>
 			</li>
 			</ul>
 	</li>
@@ -4753,7 +5353,7 @@ sudo apt install screen
 
                     <!-- Side widget-->
                     <div class="card mb-4">
-                        <div class="card-header">Like this walkthrough? Want to donate?</div>
+                        <div class="card-header">Like this walkthrough? Want to donate? <p class='sidebaricon'><img src="assets/r2d2.png" width="24px;" height="" alt="" /></p></div>
                         <div class="card-body">
 
 <p><span class='donate-address-label'>Chia (XCH):</span> <span class='donate-address-value'>xch1xz9g7cyy79vnrh6nuyh86jq4ps6ah2ny0ck2050wfqqfjwkyk0mqd89etp</span></p>
@@ -4764,21 +5364,56 @@ sudo apt install screen
 <p><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
 <input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHNwYJKoZIhvcNAQcEoIIHKDCCByQCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYCC67BMWkEA6u4KluCikSPvkeRLeNv/NgNiPXU2i7/xLT1VJf5FYjXhRr3A3lU+/ftnw3w8eacbQlET1AYW1ySfrnmhBeh4ntIKghXhzzWMmEDAgoZgLKHsFrehAweMqZsJ2Mi5QIlfOLmN6VVMFBhLwDzEv+d2EpqpaL+toh2glzELMAkGBSsOAwIaBQAwgbQGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQIV7FpVFFXYzKAgZAmvXYFf0ywIyahjca9A+PIXKYVo5g3pNVeBKsT0T65pCGebw/mdg3I1N6YRJYEsRemP2LWLsS5DgNtYCMk0XBQJ1h+3FNNeKbCOA7pSRJkGR+TL3gmDW9Jntoj+ys43IDKDMLX8P4pEzg/ma5jE3pSUgcTd774ZbEqBdhk6lytwZJkriEDvwIuBT+TzF67BZCgggOHMIIDgzCCAuygAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wHhcNMDQwMjEzMTAxMzE1WhcNMzUwMjEzMTAxMzE1WjCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMFHTt38RMxLXJyO2SmS+Ndl72T7oKJ4u4uw+6awntALWh03PewmIJuzbALScsTS4sZoS1fKciBGoh11gIfHzylvkdNe/hJl66/RGqrj5rFb08sAABNTzDTiqqNpJeBsYs/c2aiGozptX2RlnBktH+SUNpAajW724Nv2Wvhif6sFAgMBAAGjge4wgeswHQYDVR0OBBYEFJaffLvGbxe9WT9S1wob7BDWZJRrMIG7BgNVHSMEgbMwgbCAFJaffLvGbxe9WT9S1wob7BDWZJRroYGUpIGRMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbYIBADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAIFfOlaagFrl71+jq6OKidbWFSE+Q4FqROvdgIONth+8kSK//Y/4ihuE4Ymvzn5ceE3S/iBSQQMjyvb+s2TWbQYDwcp129OPIbD9epdr4tJOUNiSojw7BHwYRiPh58S1xGlFgHFXwrEBb3dgNbMUa+u4qectsMAXpVHnD9wIyfmHMYIBmjCCAZYCAQEwgZQwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tAgEAMAkGBSsOAwIaBQCgXTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xMzA0MDgwMjU2MTNaMCMGCSqGSIb3DQEJBDEWBBSWS1saKYF8oAfsUoPGVbVLJAp9YTANBgkqhkiG9w0BAQEFAASBgJr4x1tPrGSi7fKv6HSuMxSISAbvYiuq0US+EZgdQ7tD7gqvLeqRMrKiLq2AHx3YaQ/8zLZ+gVhxnAGWmpH2Suk4xjKfohbIOqgMKeKJ95lAux8fRp3i2lwUiCNMHMdsP7WL4TJ9vP3p7IWZ+i5iX9ND/5qZwaL2hLGBhdQ3bW1U-----END PKCS7-----">
 <span class='donate-address-label'>Paypal:</span>&nbsp;&nbsp;&nbsp;<input style='vertical-align:middle;' type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+
 </form></p>
+
+
+
 
 				</div> <!-- card-body -->
                         
                 </div><!-- card mb-4 -->
 
+                <!-- Side widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Attributions <p class='sidebaricon'><img src="assets/tag.png" width="24px;" height="" alt="" /></p></div>
+                    <div class="card-body">
+<div class='attribution'>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class='attribution'>Icons made by <a href="https://www.flaticon.com/authors/amethystdesign" title="AmethystDesign">AmethystDesign</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class='attribution'>Icons made by <a href="https://www.flaticon.com/authors/dinosoftlabs" title="DinosoftLabs">DinosoftLabs</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class='attribution'>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class='attribution'>Icons made by <a href="https://www.flaticon.com/authors/webalys" title="Webalys">Webalys</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+
+<!--
+Attributions:
+
+	Freepik - icons used for dashboard, bugs, choose your own adventure, brighttree treehouse, attribution tag, table of contents, disclaimer, crontab, responsive design, 
+			  start, end, and tap (useful software)
+	Smashicons - icons used for Copy, Software, Database
+	AmethystDesign - icons used for Farmer, Harvester
+	DinosoftLabs - icons used for Directory, API
+	Webalys - icons used for R2D2
+
+-->
+
+					</div> <!-- card-body -->
+				</div> <!-- card mb-4 -->
+
             </div>
         </div>
-        <!-- Footer-->
-        <footer class="py-2 bg-dark">
-            <div class="container"><p class="m-0 text-center text-warning roboto">Copyright &copy; Steven R. Stepp 2021</p></div>
-        </footer>
+        
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+		<!-- Bootstrap jQuery -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+        
+		<!-- clipboard.js to allow users to click a button to copy code from the code blocks -->
+		<script src="dist/clipboard.min.js"></script>
+		
     </body>
 </html>

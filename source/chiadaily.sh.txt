@@ -1,0 +1,89 @@
+
+#!/bin/bash
+
+# change to the chia-blockchain directory
+cd ~/chia-blockchain
+
+# start the python virtual environment for chia
+. ./activate
+
+# get plot count and plot size for JABBA
+jabbacount=`chia farm summary | tail -n 16 | head -n 1 | cut --fields 4 --delimiter=\ `
+jabbasize=`chia farm summary | tail -n 16 | head -n 1 | cut --fields 8,9 --delimiter=\ `
+
+# get plot count and plot size for TARKIN
+tarkincount=`chia farm summary | tail -n 12 | head -n 1 | cut --fields 4 --delimiter=\ `
+tarkinsize=`chia farm summary | tail -n 12 | head -n 1 | cut --fields 8,9 --delimiter=\ `
+
+# get plot count and plot size for STARKILLER
+starkillercount=`chia farm summary | tail -n 10 | head -n 1 | cut --fields 4 --delimiter=\ `
+starkillersize=`chia farm summary | tail -n 10 | head -n 1 | cut --fields 8,9 --delimiter=\ `
+
+# get plot count and plot size for KINNAKEET
+kinnakeetcount=`chia farm summary | tail -n 14 | head -n 1 | cut --fields 4 --delimiter=\ `
+kinnakeetsize=`chia farm summary | tail -n 14 | head -n 1 | cut --fields 8,9 --delimiter=\ `
+
+# get plot count and plot size for LANDO
+landocount=`chia farm summary | tail -n 8 | head -n 1 | cut --fields 4 --delimiter=\ `
+landosize=`chia farm summary | tail -n 8 | head -n 1 | cut --fields 8,9 --delimiter=\ `
+
+# get plot count and plot size for VADER
+vadercount=`chia farm summary | tail -n 6 | head -n 1 | cut --fields 4 --delimiter=\ `
+vadersize=`chia farm summary | tail -n 6 | head -n 1 | cut --fields 8,9 --delimiter=\ `
+
+# get total plot count and total plot size
+totalcount=`chia farm summary | tail -n 5 | head -n 1 | cut --fields 6 --delimiter=\ `
+totalsize=`chia farm summary | tail -n 4 | head -n 1 | cut --fields 5,6 --delimiter=\ `
+
+# get the current size of netspace
+net=`chia farm summary | tail -n 3 | head -n 1 | cut --fields 4,5 --delimiter=\ `
+
+# get the current estimated time to win
+ttw=`chia farm summary | tail -n 2 | head -n 1 | cut --fields 2 --delimiter=: | xargs`
+
+# get counts of just the poolable plots
+jpool=$(curl -s http://192.168.1.135/api/poolcount/jabba | jq -r '.data.pooled')
+tpool=$(curl -s http://192.168.1.135/api/poolcount/tarkin | jq -r '.data.pooled')
+spool=$(curl -s http://192.168.1.135/api/poolcount/starkiller | jq -r '.data.pooled')
+kpool=$(curl -s http://192.168.1.135/api/poolcount/kinnakeet | jq -r '.data.pooled')
+lpool=$(curl -s http://192.168.1.135/api/poolcount/lando | jq -r '.datapooled')
+vpool=$(curl -s http://192.168.1.135/api/poolcount/vader | jq -r '.datapooled')
+
+# calculate the total count of pool plots
+totalpool=$(($jpool+$tpool+$spool+$kpool+$lpool+$vpool))
+
+# get status of harvesters
+jstat=$(curl -s http://192.168.1.135/api/getstatus/jabba | jq -r '.data.status')
+tstat=$(curl -s http://192.168.1.135/api/getstatus/tarkin | jq -r '.data.status')
+sstat=$(curl -s http://192.168.1.135/api/getstatus/starkiller | jq -r '.data.status')
+kstat=$(curl -s http://192.168.1.135/api/getstatus/kinnakeet | jq -r '.data.status')
+lstat=$(curl -s http://192.168.1.135/api/getstatus/lando | jq -r '.data.status')
+vstat=$(curl -s http://192.168.1.135/api/getstatus/vader | jq -r '.data.status')
+
+# get plotting count of machines
+jplotting=$(curl -s http://192.168.1.135/api/getplotting/jabba | jq -r '.data.creating')
+tplotting=$(curl -s http://192.168.1.135/api/getplotting/tarkin | jq -r '.data.creating')
+splotting=$(curl -s http://192.168.1.135/api/getplotting/starkiller | jq -r '.data.creating')
+kplotting=$(curl -s http://192.168.1.135/api/getplotting/kinnakeet | jq -r '.data.creating')
+lplotting=$(curl -s http://192.168.1.135/api/getplotting/lando | jq -r '.data.creating')
+vplotting=$(curl -s http://192.168.1.135/api/getplotting/vader | jq -r '.data.creating')
+
+# calculate the total count of plotting processes
+totalplotting=$(($jplotting+$tplotting+$splotting+$kplotting+$lplotting+$vplotting))
+
+# get plotting status of machines
+jpstat=$(curl -s http://192.168.1.135/api/getppercent/jabba | jq -r '.data.pstatus')
+tpstat=$(curl -s http://192.168.1.135/api/getppercent/tarkin | jq -r '.data.pstatus')
+spstat=$(curl -s http://192.168.1.135/api/getppercent/starkiller | jq -r '.data.pstatus')
+kpstat=$(curl -s http://192.168.1.135/api/getppercent/kinnakeet | jq -r '.data.pstatus')
+lpstat=$(curl -s http://192.168.1.135/api/getppercent/lando | jq -r '.data.pstatus')
+vpstat=$(curl -s http://192.168.1.135/api/getppercent/vader | jq -r '.data.pstatus')
+
+# write fields to log
+log="chiadaily.csv"
+today=$(date)
+echo "\"$today\",$totalcount,\"$totalsize\",$totalpool,$totalplotting,\"$net\",\"$ttw\",$jabbacount,\"$jabbasize\",$jpool,$jplotting,\"$jstat\",$tarkincount,\"$tarkinsize\",$tpool,$tplotting,\"$tstat\",$starkillercount,\"$starkillersize\",$spool,$splotting,\"$sstat\",$kinnakeetcount,\"$kinnakeetsize\",$kpool,$kplotting,\"$kstat\",$landocount,\"$landosize\",$lpool,$lplotting,\"$lstat\",$vadercount,\"$vadersize\",$vpool,$vplotting,\"$vstat\"" >>~/code/brighttree/$log
+printf "Chia Daily for $today" | mpack -a -s "Chia Daily for $today" ~/code/brighttree/chiadaily.csv username@gmail.com
+
+deactivate
+

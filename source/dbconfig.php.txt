@@ -1,6 +1,6 @@
 <?php
-    DEFINE("HOST","192.168.1.135");
+    DEFINE("HOST","localhost");
     DEFINE("DB","brighttree");
     DEFINE("USER","builder");
-    DEFINE("PASSWORD","builder_password");
+    DEFINE("PASSWORD","BUILDER_PASSWORD");
 ?>

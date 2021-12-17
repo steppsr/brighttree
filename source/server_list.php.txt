@@ -1,0 +1,17 @@
+<?php
+require "dbconfig.php";
+
+$table = "servers";
+
+try {
+  $db = new PDO("mysql:host=" . HOST . ";dbname=" . DB, USER, PASSWORD);
+
+  echo "<h2>Server List</h2><ol>";
+  foreach($db->query("SELECT name,ip FROM $table") as $row) {
+    echo "<li>" . $row['name'] . " - " . $row['ip'] . "</li>";
+  }
+  echo "</ol>";
+} catch (PDOException $e) {
+    print "Error!: " . $e->getMessage() . "<br/>";
+    die();
+}

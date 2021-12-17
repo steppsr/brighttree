@@ -1,0 +1,221 @@
+#!/bin/bash
+
+# Update the BrightTree website database with values retrieved from Chia
+# First parameter calling the script will be the server name and we will use
+# access that value with $1.
+
+#echo "ONE\n"
+
+# change to the chia-blockchain directory
+cd ~/chia-blockchain
+
+# start the python virtual environment for chia
+. ./activate
+
+echo $(date +"%Y%m%d %T") >~/code/brighttree/.brighttree.log
+echo $(date +"%Y%m%d %T") >~/code/brighttree/.btcurl.log
+
+echo "server = $1" >>~/code/brighttree/.brighttree.log
+
+#echo "TWO\n"
+
+# get the number of plots currenting being created on this machine and post to db
+# creating=`ps e -C "chia plots create" | grep -c "chia plots create"`
+# update creating for MADMAX
+creating=`ps e -C "chia_plot" | grep -c "chia_plot"`
+echo "creating = $creating" >>~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setcreating/$1/$creating >>~/code/brighttree/.btcurl.log
+
+#echo "THREE\n"
+
+# get wallet balance and check to see if it's different from the last balance. Email if so, also update the db.
+bal=`chia wallet show | grep '   .Total Balance:' | cut --fields 6 --delimiter=\ | head -n 1`
+echo "bal = $bal" >>~/code/brighttree/.brighttree.log
+lastbal=`cat ~/code/brighttree/.walletbalance`
+if [ "$bal" != "$lastbal" ]; then
+        echo $bal >~/code/brighttree/.walletbalance
+        printf "Subject: New Chia Confirmed Balance: $bal\n\nConfirmed Balance: $bal" | /usr/sbin/ssmtp username@gmail.com
+        curl -s http://192.168.1.135/api/setwallet/wallet/$bal >>~/code/brighttree/.brighttree.log
+        sh ~/code/brighttree/newtrx.sh
+fi
+
+#echo "FOUR\n"
+
+# get pool info and put into BrightTree DB
+url=`chia plotnft show | grep 'Current pool URL' | cut --fields 4 --delimiter=\ `
+lasturl=`cat ~/code/brighttree/.poolurl`
+echo $url >~/code/brighttree/.poolurl
+curl -s http://192.168.1.135/api/setpoolurl/$url >>~/code/brighttree/.btcurl.log
+
+#echo "FIVE\n"
+
+# get the count of pool plots and put into BrightTree DB - JABBA
+jhdd_a=`find /mnt/hdd-a/spacepool/ -name "*.plot" | wc -l`
+jhdd_b=`find /mnt/hdd-b/spacepool/ -name "*.plot" | wc -l`
+jhdd_c=`find /mnt/hdd-c/spacepool/ -name "*.plot" | wc -l`
+jhdd_d=`find /mnt/hdd-d/spacepool/ -name "*.plot" | wc -l`
+jhdd_e=`find /mnt/hdd-e/spacepool/ -name "*.plot" | wc -l`
+jhdd_f=`find /mnt/hdd-f/spacepool/ -name "*.plot" | wc -l`
+jhdd_g=`find /mnt/hdd-g/spacepool/ -name "*.plot" | wc -l`
+jhdd_h=`find /mnt/hdd-h/spacepool/ -name "*.plot" | wc -l`
+jhdd_i=`find /mnt/hdd-i/spacepool/ -name "*.plot" | wc -l`
+jhdd_j=`find /mnt/hdd-j/spacepool/ -name "*.plot" | wc -l`
+jhdd_k=`find /mnt/hdd-k/spacepool/ -name "*.plot" | wc -l`
+jhdd_l=`find /mnt/hdd-l/spacepool/ -name "*.plot" | wc -l`
+jblack=`find /media/steve/BLACKGATE/CHIA/plots/spacepool/ -name "*.plot" | wc -l`
+jext_1=`find /media/steve/ext-01/CHIA/plots/spacepool/ -name "*.plot" | wc -l`
+jhdd01=`find /mnt/hdd-01/spacepool/ -name "*.plot" | wc -l`
+jhdd02=`find /mnt/hdd-02/spacepool/ -name "*.plot" | wc -l`
+jhdd03=`find /mnt/hdd-03/spacepool/ -name "*.plot" | wc -l`
+jhdd04=`find /mnt/hdd-04/spacepool/ -name "*.plot" | wc -l`
+jssdta=`find /mnt/ssd-ta/spacepool/ -name "*.plot" | wc -l`
+j_poolplots=$(($jhdd_a+$jhdd_b+$jhdd_c+$jhdd_d+$jhdd_e+$jhdd_f+$jhdd_g+$jhdd_h+$jhdd_i+$jhdd_j+$jhdd_k+$jhdd_l+$jblack+$jext_1+$jssdta+$jhdd01+$jhdd02+$jhdd03+$jhdd04))
+echo "jabba pooled = $j_poolplots" >>~/code/brighttree/.brighttree.log
+jabba_lastpool=`cat ~/code/brighttree/.jabbapoolcount`
+if [ $j_poolplots -ne $jabba_lastpool ]; then
+        echo $j_poolplots >~/code/brighttree/.jabbapoolcount
+        curl -s http://192.168.1.135/api/setpooled/jabba/$j_poolplots >>~/sourcecode/brighttree/.btcurl.log
+fi
+
+#echo "SIX\n"
+
+# Set plot count and sizes with the php script below
+php -f ~/code/brighttree/setplotcounts.php
+
+#echo "SEVEN\n"
+
+# update the db with the my-plotcount from farm summary
+totalcount=`chia farm summary | tail -n 5 | head -n 1 | cut --fields 6 --delimiter=\ `
+echo "my plotcount = $totalcount" >>~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setmyplotcount/my-plotcount/$totalcount >>~/code/brighttree/.btcurl.log
+
+# update the db with my-netspace from farm summary
+totalsize=`chia farm summary | tail -n 4 | head -n 1 | cut --fields 5,6 --delimiter=\ `
+echo "my netspace = $totalsize" >>~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setmynetspace/my-netspace/$totalsize >>~/code/brighttree/.btcurl.log
+
+# update the db with the chia status for this server
+status=`chia farm summary | grep 'Farming status' | cut --fields 3,4 --delimiter=\ `
+echo "status = $status" >>~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setstatus/$1/$status >>~/code/brighttree/.btcurl.log
+
+# update the db with the size of the chia netspace
+net=`chia farm summary | grep 'Estimated network space' | cut --fields 4,5 --delimiter=\ `
+echo "net = $net" >>~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setnetspace/netspace/$net >>~/code/brighttree/.btcurl.log
+
+# update the db with the ttw for chia
+ttw=`chia farm summary | tail -n 2 | head -n 1 | cut --fields 2 --delimiter=: | xargs | tr ' ' '_'`
+echo "ttw = $ttw" >>~/code/brighttree/.brighttree.log
+curl -s http://192.168.1.135/api/setchiattw/chia-ttw/$ttw >>~/code/brighttree/.btcurl.log
+
+# update the db with the install version of chia
+ver=`chia version`
+curl -s http://192.168.1.135/api/setversion/$1/$ver >>~/code/brighttree/.btcurl.log
+
+#echo "EIGHT\n"
+
+# get the phase of each running process (if possible), send to db
+# madmaxplot.sh is my plotting script
+pstatus=`bash ~/code/brighttree/runstat.sh ~/madmaxplot.sh $1 | xargs`
+
+#echo "NINE\n"
+
+# current run summary, merge with the phase status (this was for the orignal plotter and was replace when I switched to MadMax)
+#runsum=`grep -i "total time" ~/chialogs/*.log | awk '{sum=sum+$4} {avg=sum/NR} {tday=86400/avg*8*101.366/1024} END {printf "%d:%0.1f:%0.2f", NR, avg, tday}'`
+# MADMAX version for runsum value
+#   be sure to update the tday formula for the number of concurrent processing creating plots. Originally probably 8 but with MadMax should be 1
+lastrun=`cat ~/code/brighttree/.lastplottime`
+runsum=`grep -i "Total plot creation time" ~/code/brighttree/chialogs/*.log | awk '{sum=sum+$6} {avg=sum/NR} {tday=86400/avg*1*101.366/1024} END {printf "%d:%0.1f:%0.2f", NR, avg, tday}'`
+runsum="$runsum:$lastrun"
+pstatsum="$pstatus<br>$runsum"
+echo "pstatsum = $pstatsum" >>~/code/brighttree/.brighttree.log
+
+# merged phases status and run summary
+curl -s http://192.168.1.135/api/setpstatus/$1/$pstatsum >>~/code/brighttree/.btcurl.log
+
+#echo "TEN\n"
+
+# get drives info and put into BrightTree DB
+# need a df statement for each type drive filesystem in use for plots, concat them together with double ampersands
+drives=`df -h -t fuseblk --output=target,avail | grep "/" | cut --fields 3 --delimiter=\/ | tr ' ' '_' | tr '\n' '|' && df -h -t exfat --output=target,avail | grep "/" | cut --fields 4 --delimiter=\/ | tr ' ' '_' | tr '\n' '|' && df -h -t ext4 --output=target,avail | grep "/" | cut --fields 3 --delimiter=\/ | tr ' ' '_' | tr '\n' '|'`
+curl -s http://192.168.1.135/api/setdrives/$1/$drives >>~/code/brighttree/.btcurl.log
+echo "drives = $drives" >~/code/brighttree/.drives
+
+#echo "ELEVEN\n"
+
+# check BrightTree DB for any actions
+action=`curl -s http://192.168.1.135/api/getaction/$1`
+action_id=$(echo $action | jq -r '.data[0].id')
+action_name=$(echo $action | jq -r '.data[0].action')
+action_target=$(echo $action | jq -r '.data[0].itemid')
+echo "ACTION:  ID=$action_id - NAME=$action_name - TARGET=$action_target" >>~/code/brighttree/.brighttree.log
+# dp for delete plot - used this for slowly deleting old OG plots while I was creating new NFT plots
+if [ $action_name = "dp" ]; then
+
+    case $action_target in
+        "hdd-a")
+            rm "$(ls -t /mnt/hdd-a/*.plot | tail -1)"
+            ;;
+        "hdd-b")
+            rm "$(ls -t /mnt/hdd-b/*.plot | tail -1)"
+            ;;
+        "hdd-c")
+            rm "$(ls -t /mnt/hdd-c/*.plot | tail -1)"
+            ;;
+        "hdd-d")
+            rm "$(ls -t /mnt/hdd-d/*.plot | tail -1)"
+            ;;
+        "hdd-e")
+            rm "$(ls -t /mnt/hdd-e/*.plot | tail -1)"
+            ;;
+        "hdd-f")
+            rm "$(ls -t /mnt/hdd-f/*.plot | tail -1)"
+            ;;
+        "hdd-g")
+            rm "$(ls -t /mnt/hdd-g/*.plot | tail -1)"
+            ;;
+        "hdd-h")
+            rm "$(ls -t /mnt/hdd-h/*.plot | tail -1)"
+            ;;
+        "hdd-i")
+            rm "$(ls -t /mnt/hdd-i/*.plot | tail -1)"
+            ;;
+        "hdd-j")
+            rm "$(ls -t /mnt/hdd-j/*.plot | tail -1)"
+            ;;
+        "hdd-k")
+            rm "$(ls -t /mnt/hdd-k/*.plot | tail -1)"
+            ;;
+        "hdd-l")
+            rm "$(ls -t /mnt/hdd-l/*.plot | tail -1)"
+            ;;
+        "BLACKGATE")
+            rm "$(ls -t /media/steve/BLACKGATE/CHIA/plots/*.plot | tail -1)"
+            ;;
+        "ext-01")
+            rm "$(ls -t /media/steve/ext-01/CHIA/plots/*.plot | tail -1)"
+            ;;
+        "hdd-01")
+            rm "$(ls -t /mnt/hdd-01/*.plot | tail -1)"
+            ;;
+        "hdd-02")
+            rm "$(ls -t /mnt/hdd-02/*.plot | tail -1)"
+            ;;
+        "hdd-03")
+            rm "$(ls -t /mnt/hdd-03/*.plot | tail -1)"
+            ;;
+        "hdd-04")
+            rm "$(ls -t /mnt/hdd-04/*.plot | tail -1)"
+            ;;
+        "ssd-ta")
+            rm "$(ls -t /mnt/ssd-ta/*.plot | tail -1)"
+            ;;
+    esac
+    curl -s http://192.168.1.135/api/actiondone/$action_id
+fi
+#echo "TWELVE\n"
+
+# stop the python virtual environment for chia
+deactivate
+echo "" >>~/code/brighttree/.brighttree.log

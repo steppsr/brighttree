@@ -1,0 +1,565 @@
+<?php
+
+function get_action($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select id,action,server,itemid,submitdate from actions where server='$name' order by submitdate limit 1;";
+	$actions = mysqli_query($link,$sql);
+	if(!$actions)
+	{
+		http_response_code(404); 
+		exit(1);
+	}
+
+	$actarr = array();
+	while($row = mysqli_fetch_assoc($actions))
+	{
+		$actarr[] = $row;
+	}
+	return $actarr;
+	mysqli_close($link);
+}
+
+function get_total_plots()
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select sum(plots) as total_plots from servers;";
+	$servers = mysqli_query($link,$sql);
+	if(!$servers)
+	{
+		http_response_code(404); 
+		exit(1);
+	}
+	foreach($servers as $server=>$plot_count)
+	{
+		return $plot_count;
+		break;
+	}
+	mysqli_close($link);
+}
+
+function get_plot_count($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select name, plots from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	foreach($servers as $server=>$plot_count)
+	{
+		if($server==$name)
+		{
+			return $plot_count;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function get_pool_count($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select name, pooled from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	foreach($servers as $server=>$pool_count)
+	{
+		if($server==$name)
+		{
+			return $pool_count;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function get_status($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select name, status from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	foreach($servers as $server=>$status)
+	{
+		if($server==$name)
+		{
+			return $status;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function get_pstatus($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select name, pstatus from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	foreach($servers as $server=>$pstatus)
+	{
+		if($server==$name)
+		{
+			return $pstatus;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function get_ppercent($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select name, pstatus from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	foreach($servers as $server=>$ppercent)
+	{
+		$newval = "";
+		if($server==$name)
+		{
+			$per = $ppercent['pstatus'];
+			$threads = explode(",", substr($per,0,strpos($per,"<br>")));
+			foreach($threads as $thread)
+			{
+				$fields = explode(":", $thread);
+				if(count($fields) > 3 && $fields[3] != "")
+				{
+					if($fields[3] < 10)
+					{
+						$newval .= "0" . $fields[3] . "% ";
+					} else {
+						$newval .= $fields[3] . "% ";
+					}
+				}
+				elseif ($thread == "--:--:--")
+				{
+					$newval .= "--- ";
+				}
+				elseif ($fields[0] == 4)
+				{
+					$newval .= "(+) "; //99%
+				}
+			}
+			$ppercent['pstatus'] = $newval;
+			return $ppercent;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function get_plotting($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select name, creating from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	foreach($servers as $server=>$plotting)
+	{
+		if($server==$name)
+		{
+			return $plotting;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function set_plot_count($name, $value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "update servers set plots=$value where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select plots from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$plot_count)
+	{
+		if($server==$name)
+		{
+			return $plot_count;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function set_pool_count($name, $value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "update servers set pooled=$value where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select pooled from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$pool_count)
+	{
+		if($server==$name)
+		{
+			return $pool_count;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function set_creating($name, $value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "update servers set creating=" . doubleval($value) . " where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+	mysqli_close($link);
+	return $value;
+}
+
+function set_drives($name, $value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "update servers set drives='" . $value . "' where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+	mysqli_close($link);
+	return $value;
+}
+
+function set_plotreport($name, $value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "update servers set plotreport='" . $value . "' where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+	mysqli_close($link);
+	return $value;
+}
+
+function set_current_plot_drive($name, $value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "update servers set currentplotdrive='" . $value . "' where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+	mysqli_close($link);
+	return $value;
+}
+
+function get_plot_size($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	mysqli_set_charset($link, 'utf8');
+	$sql = "select name, size from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	foreach($servers as $server=>$plot_size)
+	{
+		if($server==$name)
+		{
+			return $plot_size;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function add_plot($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "update servers set plots = plots + 1 where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+
+
+	$sql = "select plots from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$plot_count)
+	{
+		if($server==$name)
+		{
+			return $plot_count;
+			break;
+		}
+	}
+	$total_plots = get_total_plots();
+
+	mysqli_close($link);
+}
+
+function sub_plot($name)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "update servers set plots = plots - 1 where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select plots from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$plot_count)
+	{
+		if($server==$name)
+		{
+			return $plot_count;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function action_done($id)
+{
+	//DELETE FROM `movies` WHERE `movie_id` = 18;
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "delete from actions where id='$id';";
+	$result = mysqli_query($link,$sql);
+}
+
+function set_size($name,$value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "update servers set size = $value where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select size from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$size)
+	{
+		if($server==$name)
+		{
+			return $size;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function add_capacity($name,$value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "update servers set capacity = capacity + $value where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select capacity from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$capacity)
+	{
+		if($server==$name)
+		{
+			return $capacity;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function set_status($name,$value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "update servers set status='$value' where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select status from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$status)
+	{
+		if($server==$name)
+		{
+			return $status;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function set_plotting_status($name,$value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$value = urldecode($value);
+	$sql = "update servers set pstatus='$value' where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select pstatus from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$status)
+	{
+		if($server==$name)
+		{
+			return $status;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function set_version($name,$value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "update servers set version='$value' where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	$sql = "select version from servers where name='$name';";
+	$servers = mysqli_query($link,$sql);
+
+	foreach($servers as $server=>$version)
+	{
+		if($server==$name)
+		{
+			return $version;
+			break;
+		}
+	}
+	mysqli_close($link);
+}
+
+function set_dictionary_value($name,$value)
+{
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "update dictionary set value='$value' where name='$name';";
+	$dictionary = mysqli_query($link,$sql);
+
+	if(!$dictionary)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	mysqli_close($link);
+	return $value;
+}
+
+?>
