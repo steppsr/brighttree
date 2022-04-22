@@ -1,0 +1,96 @@
+
+#!/bin/bash
+
+log=$1
+status=`cat $log | egrep "Crafting plot|\[P1\] Table 1 took|\[P2\] Table 7 rewrite|\[P3-2\] Table 2 took|\[P4\] Starting to write|Started copy to" | tail -n 1 | cut --fields 1,2,3,4 --delimiter=\ `
+
+case $status in
+
+	"[P1] Table 1 took")
+		per="2"
+		;;
+
+	"[P1] Table 2 took")
+		per="6"
+		;;
+
+	"[P1] Table 3 took")
+		per="12"
+		;;
+
+	"[P1] Table 4 took")
+		per="20"
+		;;
+
+	"[P1] Table 5 took")
+		per="28"
+		;;
+
+	"[P1] Table 6 took")
+		per="36"
+		;;
+
+	"[P1] Table 7 took")
+		per="42"
+		;;
+
+	"[P2] Table 7 rewrite")
+		per="43"
+		;;
+
+	"[P2] Table 6 rewrite")
+		per="48"
+		;;
+
+	"[P2] Table 5 rewrite")
+		per="51"
+		;;
+
+	"[P2] Table 4 rewrite")
+		per="55"
+		;;
+
+	"[P2] Table 3 rewrite")
+		per="58"
+		;;
+
+	"[P2] Table 2 rewrite")
+		per="61"
+		;;
+
+	"[P3-2] Table 2 took")
+		per="66"
+		;;
+
+	"[P3-2] Table 3 took")
+		per="73"
+		;;
+
+	"[P3-2] Table 4 took")
+		per="79"
+		;;
+
+	"[P3-2] Table 5 took")
+		per="85"
+		;;
+
+	"[P3-2] Table 6 took")
+		per="92"
+		;;
+
+	"[P3-2] Table 7 took")
+		per="98"
+		;;
+
+	"[P4] Starting to write")
+		per="100"
+		;;
+
+	"Total plot creation time")
+		per="COP"
+		;;
+
+esac
+
+echo $per
+

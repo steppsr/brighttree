@@ -1,0 +1,28 @@
+
+#!/bin/bash
+cd ~/chia-blockchain
+. ./activate
+
+today=$(date +"%Y-%m-%d %T")
+echo "$today" > ~/code/brighttree/.lastfivetrx
+chia wallet get_transactions -o 45 >> ~/code/brighttree/.lastfivetrx
+lastfive=`echo ~/code/brighttree/.lastfivetrx`
+
+while read line; do
+	fieldone=$(echo $line | cut --fields 1 --delimiter=\ )
+
+	if [ "$fieldone" = "Transaction" ]; then
+
+		trxid=$(echo $line | cut --fields 2 --delimiter=\ )
+
+		#check if this trxid already in .trxhistory
+		found=$(grep "$trxid" ~/code/brighttree/.trxhistory | wc -l)
+		if [ "$found" -gt 0 ]; then
+			echo $trxid >/dev/null
+		else
+			echo $trxid >>~/code/brighttree/.trxhistory
+			sh ~/code/brighttree/chiatx.sh $trxid
+		fi
+	fi
+done < ~/code/brighttree/.lastfivetrx
+

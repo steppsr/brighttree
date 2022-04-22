@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Get current price from CoinMarketCap
+content=""
+value=""
+content=`curl -s https://coinmarketcap.com/currencies/chia-network/`
+value=`echo $content | cut -d '$' -f 6`
+value=`echo $value | cut -d '<' -f 1`
+curl -s http://192.168.1.135/api/setprice/price/$value >>~/code/brighttree/.curval.log
+echo "current value = $value" >~/code/brighttree/.curval.log
+
+# Get My Pool info
+json=`curl -s --request GET --url https://developer.pool.space/api/v1/farms/LAUNCHER_ID --header 'Accept: text/plain' --header 'Developer-Key: DEVELOPER_KEY' --header 'User-Agent: curl/7.68.0'`
+
+rm ~/code/brighttree/.mypool.3.json
+mv ~/code/brighttree/.mypool.2.json ~/code/brighttree/.mypool.3.json
+mv ~/code/brighttree/.mypool.1.json ~/code/brighttree/.mypool.2.json
+echo $json > ~/code/brighttree/.mypool.1.json
+
+rank=$(echo $json | jq -r '.rank')
+unpaid=$(echo $json | jq -r '.unpaidBalanceInXCH')
+paid=$(echo $json | jq -r '.totalPaidInXCH')
+plotsize=$(echo $json | jq -r '.estimatedPlotSizeTiB')
+plotcount=$(echo $json | jq -r '.estimatedPlots')
+
+curl -s http://192.168.1.135/api/setpoolrank/pool-rank/$rank >>~/code/brighttree/.curval.log
+echo "pool rank = $rank" >>~/code/brighttree/.curval.log
+
+curl -s http://192.168.1.135/api/setpoolunpaid/pool-unpaid/$unpaid >>~/code/brighttree/.curval.log
+echo "pool unpaid = $unpaid" >>~/code/brighttree/.curval.log
+
+curl -s http://192.168.1.135/api/setpoolpaid/pool-paid/$paid >>~/code/brighttree/.curval.log
+echo "pool paid = $paid" >>~/code/brighttree/.curval.log
+
+curl -s http://192.168.1.135/api/setpoolplotsize/pool-plotsize/$plotsize >>~/code/brighttree/.curval.log
+echo "pool plotsize = $plotsize" >>~/code/brighttree/.curval.log
+
+curl -s http://192.168.1.135/api/setpoolplotcount/pool-plotcount/$plotcount >>~/code/brighttree/.curval.log
+echo "pool plotcount = $plotcount" >>~/code/brighttree/.curval.log
+
+# Get Space Pool info
+spacepool=`curl -s --request GET --url https://developer.pool.space/api/v1/pool --header 'Accept: text/plain' --header 'Developer-Key: DEVELOPER_KEY' --header 'User-Agent: curl/7.68.0'`
+rm ~/code/brighttree/.spacepool.3.json
+mv ~/code/brighttree/.spacepool.2.json ~/code/brighttree/.spacepool.3.json
+mv ~/code/brighttree/.spacepool.1.json ~/code/brighttree/.spacepool.2.json
+echo $spacepool > ~/code/brighttree/.spacepool.1.json
+
+
+sp_totnet=$(echo $spacepool | jq -r '.totalNetSpaceTiB')
+sp_poolnet=$(echo $spacepool | jq -r '.poolNetSpaceTiB')
+sp_ttw=$(echo $spacepool | jq -r '.estimatedTimeToWinSeconds')
+
+curl -s http://192.168.1.135/api/setchianetspace/chia-netspace/$sp_totnet >>~/code/brighttree/.curval.log
+echo "chia netspace = $sp_totnet" >>~/code/brighttree/.curval.log
+
+curl -s http://192.168.1.135/api/setspacepoolnetspace/spacepool-netspace/$sp_poolnet >>~/code/brighttree/.curval.log
+echo "spacepool netspace = $sp_poolnet" >>~/code/brighttree/.curval.log
+
+curl -s http://192.168.1.135/api/setspacepooltimetowin/spacepool-time-to-win/$sp_ttw >>~/code/brighttree/.curval.log
+echo "spacepool time to win = $sp_ttw" >>~/code/brighttree/.curval.log

@@ -1,0 +1,38 @@
+
+#!/bin/bash
+
+cd ~/code/brighttree
+
+# initialize the log files
+touch .curval.log
+touch .brighttree.log
+
+# initialize the server files
+echo 0 >.jabbaplotcount
+echo 0 >.jabbaplotsize
+echo 0 >.jabbapoolcount
+echo 0 >.kinnakeetplotcount
+echo 0 >.kinnakeetplotsize
+echo 0 >.landoplotcount
+echo 0 >.landoplotsize
+echo 0 >.starkillerplotcount
+echo 0 >.starkillerplotsize
+echo 0 >.tarkinplotcount
+echo 0 >.tarkinplotsize
+echo 0 >.vaderplotcount
+echo 0 >.vaderplotsize
+
+# initialize historical files
+echo 0 >.lastfivetrx
+echo 0 >.lastplottime
+echo 0 >.walletbalance
+touch .trxhistory
+
+# initialize informational files
+touch .diskprice
+touch .drives
+
+# create chialogs subdirectory
+mkdir chialogs
+cd chialogs
+echo "" >> chia01.log

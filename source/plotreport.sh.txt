@@ -1,0 +1,125 @@
+#!/bin/bash
+
+# OG plot locations
+og01="/mnt/hdd-a"
+og02="/mnt/hdd-b"
+og03="/mnt/hdd-c"
+og04="/mnt/hdd-d"
+og05="/mnt/hdd-e"
+og06="/mnt/hdd-f"
+og07="/mnt/hdd-g"
+og08="/mnt/hdd-h"
+og09="/mnt/hdd-i"
+og10="/mnt/hdd-j"
+og11="/mnt/hdd-k"
+og12="/media/steve/BLACKGATE/CHIA/plots"
+og13="/media/steve/ext-01/CHIA/plots"
+og14="/mnt/ssd-tb"
+og15="/mnt/ssd-ta"
+og16="/mnt/hdd-l"
+og17="/mnt/hdd-01"
+og18="/mnt/hdd-02"
+og19="/mnt/hdd-03"
+og20="/mnt/hdd-04"
+
+d01="hdd-a"
+d02="hdd-b"
+d03="hdd-c"
+d04="hdd-d"
+d05="hdd-e"
+d06="hdd-f"
+d07="hdd-g"
+d08="hdd-h"
+d09="hdd-i"
+d10="hdd-j"
+d11="hdd-k"
+d12="BLACKGATE"
+d13="ext-01"
+d14="ssd-tb"
+d15="ssd-ta"
+d16="hdd-l"
+d17="hdd-01"
+d18="hdd-02"
+d19="hdd-03"
+d20="hdd-04"
+
+# NFT plot locations
+nft01="/mnt/hdd-a/spacepool"
+nft02="/mnt/hdd-b/spacepool"
+nft03="/mnt/hdd-c/spacepool"
+nft04="/mnt/hdd-d/spacepool"
+nft05="/mnt/hdd-e/spacepool"
+nft06="/mnt/hdd-f/spacepool"
+nft07="/mnt/hdd-g/spacepool"
+nft08="/mnt/hdd-h/spacepool"
+nft09="/mnt/hdd-i/spacepool"
+nft10="/mnt/hdd-j/spacepool"
+nft11="/mnt/hdd-k/spacepool"
+nft12="/media/steve/BLACKGATE/CHIA/plots/spacepool"
+nft13="/media/steve/ext-01/CHIA/plots/spacepool"
+nft14="/mnt/ssd-tb/spacepool"
+nft15="/mnt/ssd-ta/spacepool"
+nft16="/mnt/hdd-l/spacepool"
+nft17="/mnt/hdd-01/spacepool"
+nft18="/mnt/hdd-02/spacepool"
+nft19="/mnt/hdd-03/spacepool"
+nft20="/mnt/hdd-04/spacepool"
+
+og01_count=`ls $og01/*.plot 2>/dev/null | wc -l`
+og02_count=`ls $og02/*.plot 2>/dev/null | wc -l`
+og03_count=`ls $og03/*.plot 2>/dev/null | wc -l`
+og04_count=`ls $og04/*.plot 2>/dev/null | wc -l`
+og05_count=`ls $og05/*.plot 2>/dev/null | wc -l`
+og06_count=`ls $og06/*.plot 2>/dev/null | wc -l`
+og07_count=`ls $og07/*.plot 2>/dev/null | wc -l`
+og08_count=`ls $og08/*.plot 2>/dev/null | wc -l`
+og09_count=`ls $og09/*.plot 2>/dev/null | wc -l`
+og10_count=`ls $og10/*.plot 2>/dev/null | wc -l`
+og11_count=`ls $og11/*.plot 2>/dev/null | wc -l`
+og12_count=`ls $og12/*.plot 2>/dev/null | wc -l`
+og13_count=`ls $og13/*.plot 2>/dev/null | wc -l`
+og14_count=`ls $og14/*.plot 2>/dev/null | wc -l`
+og15_count=`ls $og15/*.plot 2>/dev/null | wc -l`
+og16_count=`ls $og16/*.plot 2>/dev/null | wc -l`
+og17_count=`ls $og17/*.plot 2>/dev/null | wc -l`
+og18_count=`ls $og18/*.plot 2>/dev/null | wc -l`
+og19_count=`ls $og19/*.plot 2>/dev/null | wc -l`
+og20_count=`ls $og20/*.plot 2>/dev/null | wc -l`
+
+og_total=$(($og01_count+$og02_count+$og03_count+$og04_count+$og05_count+$og06_count+$og07_count+$og08_count+$og09_count+$og10_count))
+og_total=$(($og_total+$og11_count+$og12_count+$og13_count+$og14_count+$og15_count+$og16_count+$og17_count+$og18_count+$og19_count+$og20_count))
+
+nft01_count=`ls $nft01/*.plot 2>/dev/null | wc -l`
+nft02_count=`ls $nft02/*.plot 2>/dev/null | wc -l`
+nft03_count=`ls $nft03/*.plot 2>/dev/null | wc -l`
+nft04_count=`ls $nft04/*.plot 2>/dev/null | wc -l`
+nft05_count=`ls $nft05/*.plot 2>/dev/null | wc -l`
+nft06_count=`ls $nft06/*.plot 2>/dev/null | wc -l`
+nft07_count=`ls $nft07/*.plot 2>/dev/null | wc -l`
+nft08_count=`ls $nft08/*.plot 2>/dev/null | wc -l`
+nft09_count=`ls $nft09/*.plot 2>/dev/null | wc -l`
+nft10_count=`ls $nft10/*.plot 2>/dev/null | wc -l`
+nft11_count=`ls $nft11/*.plot 2>/dev/null | wc -l`
+nft12_count=`ls $nft12/*.plot 2>/dev/null | wc -l`
+nft13_count=`ls $nft13/*.plot 2>/dev/null | wc -l`
+nft14_count=`ls $nft14/*.plot 2>/dev/null | wc -l`
+nft15_count=`ls $nft15/*.plot 2>/dev/null | wc -l`
+nft16_count=`ls $nft16/*.plot 2>/dev/null | wc -l`
+nft17_count=`ls $nft17/*.plot 2>/dev/null | wc -l`
+nft18_count=`ls $nft18/*.plot 2>/dev/null | wc -l`
+nft19_count=`ls $nft19/*.plot 2>/dev/null | wc -l`
+nft20_count=`ls $nft20/*.plot 2>/dev/null | wc -l`
+
+nft_total=$(($nft01_count+$nft02_count+$nft03_count+$nft04_count+$nft05_count+$nft06_count+$nft07_count+$nft08_count+$nft09_count+$nft10_count))
+nft_total=$(($nft_total+$nft11_count+$nft12_count+$nft13_count+$nft14_count+$nft15_count+$nft16_count+$nft17_count+$nft18_count+$nft19_count+$nft20_count))
+
+summary="$d01:$og01_count|$d02:$og02_count|$d03:$og03_count|$d04:$og04_count|$d05:$og05_count|$d06:$og06_count|$d07:$og07_count|$d08:$og08_count|"
+summary="$summary$d09:$og09_count|$d10:$og10_count|$d11:$og11_count|$d12:$og12_count|$d13:$og13_count|$d14:$og14_count|$d15:$og15_count|$d16:$og16_count|"
+summary="$summary$d17:$og17_count|$d18:$og18_count|$d19:$og19_count|$d20:$og20_count"
+summary="$summary~"
+summary="$summary$d01:$nft01_count|$d02:$nft02_count|$d03:$nft03_count|$d04:$nft04_count|$d05:$nft05_count|$d06:$nft06_count|$d07:$nft07_count|$d08:$nft08_count|"
+summary="$summary$d09:$nft09_count|$d10:$nft10_count|$d11:$nft11_count|$d12:$nft12_count|$d13:$nft13_count|$d14:$nft14_count|$d15:$nft15_count|$d16:$nft16_count|"
+summary="$summary$d17:$nft17_count|$d18:$nft18_count|$d19:$nft19_count|$d20:$nft20_count"
+
+curl -s http://192.168.1.135/api/setplotreport/jabba/$summary > ~/code/brighttree/.plotreport
+

@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# Parameter 1 - our plot script
+
+# first lets pull in the lines from the plot script. We want to get the number of iterations (-n switch value) and the log file.
+
+# for each line in plots, we will store and determine: total iterations, current iteration (determined from parsing log file),
+# and what phase the current plot is in at the moment. Format = phase:iteration:iterations  ex.  2:25:50
+out=""
+sep=""
+drv=""
+while read line; do
+	if [[ $(echo $line | cut --fields 1 --delimiter=\ ) = "screen" ]]; then
+		num=$(echo $line | cut --fields 22 --delimiter=\ )
+		if [[ $num -lt 0 ]]; then
+			num="oo"
+		fi
+		log=$(echo $line | cut --fields 30 --delimiter=\ | cut --fields 1 --delimiter=\')
+		scr=$(echo $line | cut --fields 5 --delimiter=\ )
+		drv=$(echo $line | cut --fields 20 --delimiter=\ )
+		case $drv in
+			"/mnt/hdd-a/spacepool/")
+				drvout="hdd-a"
+				;;
+			"/mnt/hdd-b/spacepool/")
+				drvout="hdd-b"
+				;;
+			"/mnt/hdd-c/spacepool/")
+				drvout="hdd-c"
+				;;
+			"/mnt/hdd-d/spacepool/")
+				drvout="hdd-d"
+				;;
+			"/mnt/hdd-e/spacepool/")
+				drvout="hdd-e"
+				;;
+			"/mnt/hdd-f/spacepool/")
+				drvout="hdd-f"
+				;;
+			"/mnt/hdd-g/spacepool/")
+				drvout="hdd-g"
+				;;
+			"/mnt/hdd-h/spacepool/")
+				drvout="hdd-h"
+				;;
+			"/mnt/hdd-i/spacepool/")
+				drvout="hdd-i"
+				;;
+			"/mnt/hdd-j/spacepool/")
+				drvout="hdd-j"
+				;;
+			"/mnt/hdd-k/spacepool/")
+				drvout="hdd-k"
+				;;
+			"/mnt/hdd-l/spacepool/")
+				drvout="hdd-l"
+				;;
+			"/mnt/hdd-01/spacepool/")
+				drvout="hdd-01"
+				;;
+			"/mnt/hdd-02/spacepool/")
+				drvout="hdd-02"
+				;;
+			"/mnt/hdd-03/spacepool/")
+				drvout="hdd-03"
+				;;
+			"/mnt/hdd-04/spacepool/")
+				drvout="hdd-04"
+				;;
+			"/media/steve/BLACKGATE/CHIA/plots/spacepool/")
+				drvout="BLACKGATE"
+				;;
+			"/media/steve/ext-01/CHIA/plots/spacepool/")
+				drvout="ext-01"
+				;;
+			"/mnt/ssd-tb/spacepool/")
+				drvout="ssd-tb"
+				;;
+			"/mnt/ssd-ta/spacepool/")
+				drvout="ssd-ta"
+				;;
+		esac
+		curl -s http://192.168.1.135/api/setcurplotdrive/$2/$drvout
+		pha=`cat $log | grep "Phase " | tail -n 1 | cut --fields 2 --delimiter=\ `
+		pha=$(($pha+1))
+		if [[ $pha -gt 4 ]]; then
+			pha=1
+		fi
+		per=$(~/code/brighttree/percent.sh $log)
+		fin=`cat $log | grep -c "Total plot creation time"`
+		lastplottime=` cat $log | grep -i "Total plot creation time" | tail -n 1 | cut --fields 6 --delimiter=\ `
+		echo "$lastplottime" >~/code/brighttree/.lastplottime
+		cnt=`ps aux | grep "S $scr b" | grep -c -v "grep"`
+		if [ $cnt -gt 0 ]; then
+			out="$out$sep$pha:$fin:$num:$per:$drvout"
+		else
+			out="$out$sep--:--:--:--"
+		fi
+		sep=","
+	fi
+done < $1
+echo $out
+

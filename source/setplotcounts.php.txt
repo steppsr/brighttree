@@ -1,0 +1,136 @@
+<?php
+
+$jcount = 0;
+$jsize = 0;
+$tcount = 0;
+$tsize = 0;
+$scount = 0;
+$ssize = 0;
+$kcount = 0;
+$ksize = 0;
+$lcount = 0;
+$lsize = 0;
+$vcount = 0;
+$vsize = 0;
+
+$farm = shell_exec("~/chia-blockchain/venv/bin/chia farm summary");
+$lines = explode("\n",$farm);
+$max=count($lines);
+
+for($x=0; $x<$max; $x++)
+{
+	$fields = explode(" ",$lines[$x]);
+	switch($fields[0])
+	{
+		case "Local":
+			$jcount = (count($lines) > $x+1) ? getPlotCount($lines[$x+1]) : 0;
+			$jsize = (count($lines) > $x+1) ? getPlotSize($lines[$x+1]) : 0;
+			break;
+
+		case "Remote":
+			switch($fields[4])
+			{
+				case "192.168.1.145":
+					// Kinnakeet
+					$kcount = (count($lines) > $x+1) ? getPlotCount($lines[$x+1]) : 0;
+					$ksize = (count($lines) > $x+1) ? getPlotSize($lines[$x+1]) : 0;
+					break;
+
+				case "192.168.1.142":
+					// Starkiller
+					$scount = (count($lines) > $x+1) ? getPlotCount($lines[$x+1]) : 0;
+					$ssize = (count($lines) > $x+1) ? getPlotSize($lines[$x+1]) : 0;
+					break;
+
+				case "192.168.1.137":
+					//tarkin
+					$tcount = (count($lines) > $x+1) ? getPlotCount($lines[$x+1]) : 0;
+					$tsize = (count($lines) > $x+1) ? getPlotSize($lines[$x+1]) : 0;
+					break;
+
+				case "192.168.1.153":
+					//lando
+					$lcount = (count($lines) > $x+1) ? getPlotCount($lines[$x+1]) : 0;
+					$lsize = (count($lines) > $x+1) ? getPlotSize($lines[$x+1]) : 0;
+					break;
+
+				case "192.168.1.155":
+					//vader
+					$vcount = (count($lines) > $x+1) ? getPlotCount($lines[$x+1]) : 0;
+					$vsize = (count($lines) > $x+1) ? getPlotSize($lines[$x+1]) : 0;
+					break;
+			}
+			break;
+	}
+}
+
+$jlastcount = shell_exec("cat ~/code/brighttree/.jabbaplotcount");
+$tlastcount = shell_exec("cat ~/code/brighttree/.tarkinplotcount");
+$slastcount = shell_exec("cat ~/code/brighttree/.starkillerplotcount");
+$klastcount = shell_exec("cat ~/code/brighttree/.kinnakeetplotcount");
+$llastcount = shell_exec("cat ~/code/brighttree/.landoplotcount");
+$vlastcount = shell_exec("cat ~/code/brighttree/.vaderplotcount");
+
+if($jlastcount != $jcount)
+{
+	shell_exec("echo " . $jcount . " >~/code/brighttree/.jabbaplotcount");
+	shell_exec("echo " . $jsize . " >~/code/brighttree/.jabbaplotsize");
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/jabba/". $jcount);
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/jabba/". $jsize);
+}
+
+if($tlastcount != $tcount)
+{
+	shell_exec("echo " . $tcount . " >~/code/brighttree/.tarkinplotcount");
+	shell_exec("echo " . $tsize . " >~/code/brighttree/.tarkinplotsize");
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/tarkin/". $tcount);
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/tarkin/". $tsize);
+}
+
+if($slastcount != $scount)
+{
+	shell_exec("echo " . $scount . " >~/code/brighttree/.starkillerplotcount");
+	shell_exec("echo " . $ssize . " >~/code/brighttree/.starkillerplotsize");
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/starkiller/". $scount);
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/starkiller/". $ssize);
+}
+
+if($klastcount != $kcount)
+{
+	shell_exec("echo " . $kcount . " >~/code/brighttree/.kinnakeetplotcount");
+	shell_exec("echo " . $ksize . " >~/code/brighttree/.kinnakeetplotsize");
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/kinnakeet/". $kcount);
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/kinnakeet/". $ksize);
+}
+
+if($llastcount != $lcount)
+{
+	shell_exec("echo " . $lcount . " >~/code/brighttree/.landoplotcount");
+	shell_exec("echo " . $lsize . " >~/code/brighttree/.landoplotsize");
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/lando/". $lcount);
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/lando/". $lsize);
+}
+
+if($vlastcount != $vcount)
+{
+	shell_exec("echo " . $vcount . " >~/code/brighttree/.vaderplotcount");
+	shell_exec("echo " . $vsize . " >~/code/brighttree/.vaderplotsize");
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setcount/vader/". $vcount);
+	shell_exec("curl -s http://192.168.1.135/brighttree/api/setsize/vader/". $vsize);
+}
+
+
+// ----------------- end of program ----------------- //
+
+function getPlotCount($line)
+{
+	$fields = explode(" ",$line);
+	return $fields[3];
+}
+
+function getPlotSize($line)
+{
+	$fields = explode(" ",$line);
+	return $fields[7] . " " . $fields[8];
+}
+?>

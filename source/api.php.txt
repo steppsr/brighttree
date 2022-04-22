@@ -1,0 +1,354 @@
+<?php
+require "data.php";
+require "dbconfig.php";
+
+$name = "";
+$req = "";
+$val = 0;
+
+if(!empty($_GET['req']) && !empty($_GET['name']))
+{
+	$req = $_GET['req'];
+	$name = $_GET['name'];
+	if(!empty($_GET['val']))
+	{
+		$val = $_GET['val'];
+	}
+
+	// HANDLE REQUEST
+	switch(strtolower($req))
+	{
+		// GETS
+		case "totalplots":
+			send_response(get_total_plots());
+			break;
+
+		case "plotcount":
+			send_response(get_plot_count($name));
+			break;
+
+		case "poolcount":
+			send_response(get_pool_count($name));
+			break;
+
+		case "plotsize":
+			send_response(get_plot_size($name));
+			break;
+
+		case "getstatus":
+			send_response(get_status($name));
+			break;
+
+		case "getplotting":
+			send_response(get_plotting($name));
+			break;
+
+		case "getpstatus":
+			send_response(get_pstatus($name));
+			break;
+
+		case "getppercent":
+			send_response(get_ppercent($name));
+			break;
+
+		case "getpoolurl":
+			send_response(get_pool_url($name));
+			break;
+
+		case "getpooldiff":
+			send_response(get_pool_difficulty($name));
+			break;
+
+		case "getpoolpts":
+			send_response(get_pool_points($name));
+			break;
+
+		case "getpoolrank":
+			send_response(get_pool_rank($name));
+			break;
+
+		case "getaction":
+			send_response(get_action($name));
+			break;
+
+		// SETS
+		case "setsize":
+			$result = ($val != "") ? set_size($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setstatus":
+			$result = ($val != "") ? set_status($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpstatus":
+			$result = ($val != "") ? set_plotting_status($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setversion":
+			$result = ($val != "") ? set_version($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setcount":
+			$result = ($val >= 0) ? set_plot_count($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpooled":
+			$result = ($val >= 0) ? set_pool_count($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setcreating":
+			$result = ($val >= 0) ? set_creating($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "addcapacity":
+			$result = ($val >= 0) ? add_capacity($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setdrives":
+			$result = ($val != "") ? set_drives($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setplotreport":
+			$result = ($val != "") ? set_plotreport($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setcurplotdrive":
+			$result = ($val != "") ? set_current_plot_drive($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setnetspace":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setwallet":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setprice":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolrank":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolurl":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolpts":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpooldiff":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolunpaid":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolpaid":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolblocks":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolplotsize":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolplotcount":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolpendpoints":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolacctname":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpoolglobalpendpoints":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setpooljoindate":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setchianetspace":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepoolnetspace":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepoolnanetspace":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepooleunetspace":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepoolasianetspace":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepoolpoolreward":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepoolfarmerreward":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepooltotalfarms":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepooltimetowin":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepoolminimumpayout":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setspacepoolglobalpendingpoints":
+			$result = ($val >= 0) ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setdiskprice":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "sethddcoinprice":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "sethddcoinwallet":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setchiattw":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setmyplotcount":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setmynetspace":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		case "setfarmsummary":
+			$result = ($val != "") ? set_dictionary_value($name,$val) : "Error, no changes made.";
+			redirect();
+			break;
+
+		// OTHERS
+		case "addplot":
+			$result=add_plot($name);
+			redirect();
+			break;
+
+		case "subplot":
+			$result=sub_plot($name);
+			redirect();
+			break;
+
+		case "actiondone":
+			$result=action_done($name);
+			redirect();
+			break;
+	}
+}
+else
+{
+	// the URL didn't have the needed GET parameters. Send Invalid Request back.
+	response(400, "Invalid Request", NULL);
+	echo "\nName: $name\n";
+}
+// END MAIN
+
+function redirect()
+{
+	header('Location: http://192.168.1.135/');
+}
+
+function send_response($result)
+{
+	if(empty($result))
+	{
+		response(200, "Server Not Found", NULL);
+	}
+	else
+	{
+		response(200, "Server Found", $result);		//Uncomment when you need to debug.
+	}
+}
+
+function response($status,$status_message,$data)
+{
+	header("HTTP/1.1 ".$status);
+	$response['status']=$status;
+	$response['status_message']=$status_message;
+	$response['data']=$data;
+	$json_response = json_encode($response);
+	echo $json_response;
+}
+
+// END OF FILE
+?>
+

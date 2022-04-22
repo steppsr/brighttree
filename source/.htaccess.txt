@@ -1,0 +1,21 @@
+# Turn on the rewriting engine
+RewriteEngine On
+
+# This will allow us to use a nicer URL to call the API. This rewrite rule will parse
+# the URL into a request (or action), name, and value. Then create the GET URL for our 
+# dashboard. We use this rule for setting the value of a column in the database.
+# A typical call will look like this:
+#   https://192.168.1.135/api/request/name/value
+#
+# Real example: https://192.168.1.135/api/setwallet/wallet/2.0
+#
+RewriteRule ^(.*)/(.*)/(.*)/(.*)$ $1.php?req=$2&name=$3&val=$4 [NC,L]
+
+# This rewrite rule is very similar but will just take a request and a name. We use
+# this rule to get a value from the database.
+RewriteRule ^(.*)/(.*)/(.*)$ $1.php?req=$2&name=$3 [NC,L]
+
+# This rewrite rule is also similar but only takes a request.
+RewriteRule ^(.*)/(.*)$ $1.php?req=$2 [NC,L]
+
+

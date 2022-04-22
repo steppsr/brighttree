@@ -1,0 +1,572 @@
+<?php
+require "data.php";
+require "dbconfig.php";
+
+build_page_top();
+build_page_body();
+build_page_bottom();
+
+// -----------------------------------------------------------
+// FUNCTION LIST
+// -----------------------------------------------------------
+
+function build_page_top() {
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv='refresh' content='15'>
+	<link rel='icon' type='image/x-icon' href='favicon.png'>
+	<title>BrightTree</title>
+
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&display=swap');
+		
+		* { box-sizing: border-box; }
+
+		@media only screen and (max-width: 1000px) {
+			[class*="name"] { padding: 1rem; background-color: #1f9c62; color: #ffc90e; text-align: center; margin-top: -16px; margin-bottom: 10px; line-height: 78px; }
+		}
+		@media only screen and (min-width: 1001px) {
+			.name-comp { text-align:left; }
+			.name-tool { text-align:right; }
+		}
+
+		[class*="con"] { padding: 1rem; background-color: #0f1711; color: #ffc90e; text-align: center; }
+		[class*="col"] { padding: 1rem; background-color: #0f1711; color: #ffc90e;  }
+		[class*="name"] { padding: 1rem; background-color: #1f9c62; color: #ffc90e; margin-top: -16px; }
+
+		body { background: #0f1711 !important; color: #ffc90e; }
+		table { display: inline-block; vertical-align: top;}
+		tr,th { padding-left: 10px; padding-right: 10px; font-weight: normal;  }
+		tr,th,td { border: 1px solid #FFC90E; text-align: center; }
+
+		.name-tool, .name-comp { 
+			background: #1f9c62 !important; 
+			color: #ffc90e;
+			font-family: 'Passion One', cursive;
+			font-size: 48px; 
+			font-weight: bold;
+			text-shadow: 2px 2px 5px black;
+			padding: 0px;
+			border: none;
+			line-height: 58px;
+		}
+
+		.server { color: #ffc90e; font-weight: bold;	font-size: 1.3rem; }
+		.serverblock { text-align: center; font-size: 1.1rem; }
+		.serverinfo { text-align: right; border-top: 0px; border-bottom: 0px; }
+		.sidebar {  color: #ffc90e; font-size: 1.5rem; text-align: right; }
+		.label { color: #1f9c62; float: left; }
+		.top_spacer{ border-left: 0px; border-right: 0px; }
+		.bot_spacer { border-left: 0px; border-right: 0px; }
+		.myplotcount { margin-top: 110px; }
+		.drivelabel { color: #1f9c62; }
+		.drivesize { color: #ff0000; }
+		.plotcount { color: #ffffff; }
+		.progressred { background-color:rgba(255,0,0,0.5) !important; }
+		.progressblue { background-color:rgba(17,24,136,0.75) !important; }
+		.progressyellow { background-color:rgba(255,201,14,1) !important; }
+
+		.myplotcount { border-top: 1px solid #ffc90e; }
+		.poolpaid { border-bottom: 1px solid #ffc90e; }
+		.chiabalance { border-bottom: 1px solid #ffc90e; }
+		.hddbalance { border-bottom: 1px solid #ffc90e; }
+		.todaysbest { border-bottom: 1px solid #ffc90e; }
+		.poolplotsize { border-bottom: 1px solid #ffc90e; }
+		.chianetspace { border-bottom: 1px solid #ffc90e; }
+		.poolttw { border-bottom: 1px solid #ffc90e; }
+		.todaysbestpricelabel { font-size: .85rem }
+
+		.plottinglabel { background: #1f9c62 !important; color: #ffc90e; font-size: 0.65rem; }
+		.plotsummaryblock { text-align: left; font-size: 0.85rem; color: #ffc90e; padding: 5px; }
+		.plotsummarydrive { color: #1F9C62; text-align: left; font-family: 'Passion One', cursive; font-size: 1.5rem; margin-top: -5px; }
+		.plotjob { float:right; }
+		.green { color: #1f9c62; }
+
+		.center { width: 1200px; margin: auto auto auto auto; text-align: center; }
+		.right { float: right; }
+		.footer { width:100%; position:absolute; bottom: 0px; margin-top:15px; background: #1f9c62 !important; color: #ffc90e; text-shadow: 2px 2px 5px black; }
+		.footer a { text-decoration: none; color: #ffc90e; }
+		.footer a:hover { text-decoration: underline; color: #001379; }
+
+		.poolrank { 
+			font-size: 3.5rem;  
+			font-family: 'Passion One', cursive;
+			padding: 0px 15px 0px 15px;
+			float:left;
+			color: #ffc90e; 
+			font-weight: normal; 
+			border-radius: 28px; 
+			border: 2px solid #ffc90e; 
+		 }
+	</style>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+<?php
+}
+
+function build_page_body() {
+?>
+<body>
+
+	<div class='container-fluid'>
+		<div class="row">
+			<div class='col-lg-6 col-xs-12 col-sm-12 col-md-12 name-comp'>BrightTree</div>
+			<div class='col-lg-6 col-xs-12 col-sm-12 col-md-12 name-tool'>Chia Dashboard</div>
+		</div>
+		
+		<div class='row'>
+
+			<?=	build_sidebar(); ?>
+
+			<!-- loop through servers and call serverblock function for each -->
+			<div class='col-lg-9 col-xs-12 col-sm-12 col-md-12 serverblock'>
+
+				<?= build_serverblock(); ?>
+
+			</div>
+		</div>
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+<?php
+}
+
+function build_page_bottom() {
+?>
+	</html>
+<?php
+}
+
+function build_serverblock() {
+
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select name,ip,status,version,creating,pstatus,plots,pooled,size,capacity,drives from servers order by ip asc;";
+	$servers = mysqli_query($link,$sql);
+
+	if(!$servers)
+	{
+		http_response_code(404);
+		exit(1);
+	}
+
+	while($row = mysqli_fetch_array($servers))
+	{
+		
+		$server_name = $row['name'];
+		$server_ip = $row['ip'];
+		$server_status = $row['status'];
+		$server_version = $row['version'];
+		$server_creating = $row['creating'];
+		$server_nft_plotcount = $row['pooled'];
+		$server_plotsize = $row['size'];
+		$table_padding = "&nbsp;&nbsp;&nbsp;&nbsp;";
+		$pstatus = "";
+
+		if($row['creating'] > 0)
+		{
+			if($row['creating'] == 1)
+			{
+				$pstatus = $row['pstatus'];
+			}
+		}
+?>
+		<table>
+			<tr><th colspan='3'><span class='server'><?=strtoupper($server_name);?></span></th></tr>
+			<tr class='serverinfo'><th class='serverinfo' colspan='3'><span class='label'>IP: </span><?=$server_ip;?></th></tr>
+			<tr class='serverinfo'><th class='serverinfo' colspan='3'><span class='label'>Status: </span><?=$server_status;?></th></tr>
+			<tr class='serverinfo'><th class='serverinfo' colspan='3'><span class='label'>Version: </span><?=$server_version;?></th></tr>
+			<tr class='serverinfo'><th class='serverinfo' colspan='3'><span class='label'>Plotcount: </span><?=$server_nft_plotcount;?></th></tr>
+			<tr class='serverinfo'><th class='serverinfo' colspan='3'><span class='label'>Plotting: </span><?=$server_creating;?></th></tr>
+			<tr class='serverinfo'><th class='serverinfo' colspan='3'><span class='label'>Plotsize: </span><?=$server_plotsize;?></th></tr>
+			<tr class='top_spacer'><th class='top_spacer' colspan='3'>&nbsp;</th></tr>
+			<tr><th>Drive</th><th>Free</th><th>Count</th></tr>
+			
+			<?=build_server($server_name,$pstatus); ?>
+			<tr class='bot_spacer'><th class='bot_spacer' colspan='3'>- ¢ -</th></tr>
+			</table><?=$table_padding;?>
+	<?php
+		
+	}
+	mysqli_close($link);
+}
+
+function build_plotsummary($pstatus) {
+	
+	$summary = "";
+
+	/* Sample pstatus
+        1:137:165:2:hdd-24<br>3239:1832.9:4.67:1853.75
+        2:137:165:43:hdd-24<br>3239:1832.9:4.67:1853.75
+        split on <br>  Left is current job info, Right is statistics on all jobs in logs
+        Job info
+            [0] - Phase
+            [1] - Current count of plot process
+            [2] - Max plots to plot from plotting script
+            [3] - Percent complete of current plot
+        Statistics
+            [0] - Total number of plots (in log files) lost some logs so not every plot accounted for
+            [1] - Average seconds for plot job
+            [2] - Estimated TiB plotted each day
+            [3] - Total seconds to make last plot
+    */
+	if(strlen($pstatus) > 0) {
+		$pr = explode(":",str_replace("<br>",":",$pstatus));
+
+		$runval = (count($pr) >=9 && is_numeric($pr[8])) ? $pr[8] : 0;
+		$lastrun = (count($pr) >=9) ? number_format($runval/60 ,1) : "";
+		$currentjob = $pr[1];
+		$totaljob = $pr[2];
+		$currentphase = $pr[0];
+		$currentpercent = $pr[3];
+		$currentdrive = $pr[4];
+		$k32plots = $pr[5];
+		$averageminutes = number_format($pr[6] / 60,1);
+		$TiBperday = $pr[7];
+		
+		$summary = "<tr><td colspan='3' class='plottinglabel'>Plotting...</td></tr><tr><td colspan='3'>";
+		$summary .= "<div class='plotsummaryblock'>";
+		$summary .= "<span class='plotsummarydrive'>" . $currentdrive . "</span>";
+		$summary .= "<span class='plotjob'>" . $currentjob . " <span class='green'>/</span> " . $totaljob . "</span><br>";
+		$summary .= "<span class='green'>Phase</span> " . $currentphase . " <span class='green'>-</span> " . $currentpercent . " <span class='green'>%</span><br>";
+		$summary .= $k32plots . " <span class='green'>K32 Plots</span>, ";
+		$summary .= $averageminutes . " <span class='green'>minutes</span><br>";
+		$summary .= $TiBperday . " <span class='green'>TiB/day</span>, ";
+		$summary .= $lastrun . " <span class='green'>last run</span>";
+		$summary .= "</div>";
+		$summary .= "</td></tr>";
+	}
+	return $summary;
+}
+
+function build_sidebar() {
+
+	$pool_rank = get_pool_rank();
+	$pool_plotcount = get_pool_plotcount();
+	$my_plotcount = get_my_plotcount();
+	$pool_plotsize = get_pool_plotsize();
+	$pool_unpaid = get_pool_unpaid();
+	$pool_paid = get_pool_paid();
+	$chia_netspace = get_chia_netspace();
+	$pool_netspace = get_pool_netspace();
+	$my_netspace = get_my_netspace($pool_plotsize);
+	$pool_ttw = get_pool_ttw();
+	$my_ttw = get_my_ttw();
+	$chia_qty = get_chia_qty();
+	$chia_price = get_chia_price();
+	$chia_balance = get_chia_balance($chia_qty, $chia_price);
+	$hddcoin_qty = get_hddcoin_qty();
+	$hddcoin_price = get_hddcoin_price();
+	$hddcoin_balance = get_hddcoin_balance($hddcoin_qty, $hddcoin_price);
+	$todaysbest_price = get_todaysbest_price();
+	$todaysbest_url = get_todaysbest_url();
+?>
+	<div class='col-lg-3 col-xs-12 col-sm-12 col-md-12 sidebar'>
+			<div class='poolrank'><span class='label'>Rank </span><span class='rankvalue'>&nbsp;<?=$pool_rank;?></span></div>
+			<br>
+			<div class='myplotcount'><span class='label'>My Plot Count: </span><?=$my_plotcount;?></div>
+			<div class='poolplotcount'><span class='label'>Pool Plot Count: </span><?=$pool_plotcount;?></div>
+			<div class='poolplotsize'><span class='label'>Pool Plot Size: </span><?=$pool_plotsize;?></div>
+			<div class='mynetspace'><span class='label'>My Netspace: </span><?=$my_netspace;?></div>
+			<div class='poolnetspace'><span class='label'>Pool Netspace: </span><?=$pool_netspace;?></div>
+			<div class='chianetspace'><span class='label'>Chia Netspace: </span><?=$chia_netspace;?></div>
+			<div class='myttw'><span class='label'>My Time to Win: </span><?=$my_ttw;?></div>
+			<div class='poolttw'><span class='label'>Pool Time to Win: </span><?=$pool_ttw;?></div>
+			<div class='poolunpaid'><span class='label'>Pool Unpaid: </span><?=$pool_unpaid;?></div>
+			<div class='poolpaid'><span class='label'>Pool Paid: </span><?=$pool_paid;?></div>
+			<div class='chiaquantity'><span class='label'>CHIA Qty: </span><?=$chia_qty;?></div>
+			<div class='chiaprice'><span class='label'>CHIA Price: </span><?=$chia_price;?></div>
+			<div class='chiabalance'><span class='label'>CHIA Balance: </span><?=$chia_balance;?></div>
+			<div class='hddquantity'><span class='label'>HDDcoin Qty: </span><?=$hddcoin_qty;?></div>
+			<div class='hddprice'><span class='label'>HDDcoin Price: </span><?=$hddcoin_price;?></div>
+			<div class='hddbalance'><span class='label'>HDDcoin Balance: </span><?=$hddcoin_balance;?></div>
+			<div class='todaysbest'><span class='label'>Today's Best 18 TB: </span><?=$todaysbest_url;?></div>
+		</div>
+<?php
+}
+
+function build_server($server_name, $pstatus = "") {
+
+	$plotreport = get_server_plotreport($server_name);
+	$serverdrives = get_server_drives($server_name);
+	$currentplotdrive = get_server_currentplotdrive($server_name);
+
+	$col = "";
+	$ptypes = explode('~',$plotreport); // the ~ separates the OG plots and the NFT plots
+	$pd = explode('|',$ptypes[1]); // the | separates the drives
+	$size = count($pd);
+
+	for ($x = 0; $x < $size; $x++)
+	{
+		$df = explode(':',$pd[$x]);	// the : separates the drivename and plotcount
+		if($df[1]>0) {
+			$df_name = $df[0];
+
+			// rename a couple drives that have long names
+			switch($df_name)
+			{
+				case "BLACKGATE": $df_name = "black"; break;
+				case "BLUEGATE": $df_name = "blue"; break;
+				case "ssd-tb" : $df_name = "ssdtb"; break;
+				case "ssd-ta" : $df_name = "ssdta"; break;
+			}
+/*
+DRIVES sample
+hdd-a__141G|hdd-c__242G|hdd-b__140G|hdd-e__242G|hdd-g__243G|hdd-j__445G|hdd-i__343G|hdd-h__243G|hdd-f__242G|hdd-d__242G|hdd-k__343G|ext-01_____255G|BLACKGATE__280G|
+
+PLOTREPORT sample
+hdd-a:89|hdd-b:124|hdd-c:123|hdd-d:123|hdd-e:123|hdd-f:123|hdd-g:123|hdd-h:123|hdd-i:162|hdd-j:161|hdd-k:162|BLACKGATE:34|ext-01:71~hdd-a:75|hdd-b:40|hdd-c:40|hdd-d:40|hdd-e:40|hdd-f:40|hdd-g:40|hdd-h:40|hdd-i:0|hdd-j:0|hdd-k:0|BLACKGATE:0|ext-01:0
+*/
+			$percent = 0;
+			if(is_numeric($df[1]))
+			{
+				$ss = size_from_serverdrives($df[0],$serverdrives);		// pass the drive name and array of drives to the function to get the amount of space free
+				$ss = ($ss == 0) ? 1 : $ss;
+
+				// since the size has a "G" in it for Gigabytes, strip that out.
+				// If current plot count plus the size / 100 is not greater than 0, the we dont calc the percent, we just accept the default value of zero.
+				if(($df[1] + intval(str_replace("G","",$ss)/100)) > 0)
+				{
+					// calcuate the percent the drive is full
+					//      value of (count  / ( count +  value of( freespace / 100) * 100)
+					//                current / ( total possible) * 100
+					// Example 18 TB drive:   136 current plots. 3000G freespace.
+					//                        (136 / (136 + 3000/100) * 100) which comes out to 81.92 %
+					$percent = intval($df[1] / ($df[1] + intval(str_replace("G","",$ss)/100)) * 100);
+				}
+			}
+			$progress_color = ($currentplotdrive == $df[0]) ? "progressyellow" : "progressblue";
+			$percent = ($progress_color == "progressyellow" && $percent < 5) ? 5 : $percent;
+			//determine freespace is less than 100GB, if this is the case then we are full with plots and should use a red progress bar.
+			$progress_color = ($percent > 99) ? "progressred" : $progress_color;
+
+			$col .= "<tr>";
+			$col .= "<td><div class='wborder'><div class='" . $progress_color . "' style='width:" . $percent . "%'><span class='drivelabel'>" . $df_name . "</span></div></div></td>";
+			$col .= "<th><span class='drivesize'>" . size_from_serverdrives($df[0],$serverdrives) . "</span></th>";
+			$col .= "<th><span class='plotcount'>" . $df[1] . "</span></th>";
+			$col .= "</tr>";
+		}
+	}
+
+	$col .= build_plotsummary($pstatus);
+
+	return $col;
+}
+
+function size_from_serverdrives($drive,$serverdrives) {
+	/*
+	$drive			hdd-a
+	$serverdrives	hdd-a__242G|hdd-c__242G|hdd-b__242G|hdd-e__242G|hdd-g__243G|hdd-j__445G|hdd-i__343G|hdd-h__242G|hdd-f__242G|hdd-d__242G|hdd-k__343G|ext-01_____255G|BLACKGATE__280G|
+	*/
+	$result = "";
+	$serverdrives = str_replace("______",":",$serverdrives);
+	$serverdrives = str_replace("_____",":",$serverdrives);
+	$serverdrives = str_replace("____",":",$serverdrives);
+	$serverdrives = str_replace("___",":",$serverdrives);
+	$serverdrives = str_replace("__",":",$serverdrives);
+	$serverdrives = str_replace("_",":",$serverdrives);
+
+	$sd = explode('|',$serverdrives);
+	foreach($sd as $d)
+	{
+		$f = explode(':',$d);
+		if($f[0] == $drive)
+		{
+			$result = $f[1];
+			if(strpos($result,"T"))
+			{
+				$temp = substr($result,0,strlen($result)-1);
+				$result = $temp * 1000 . "G";
+			}
+			break;   // found drive so break out of foreach loop
+		}
+	}
+	return $result;
+}
+
+function get_pool_rank() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='pool-rank';";
+	$pool_rank = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $pool_rank;
+}
+
+function get_pool_plotcount() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='pool-plotcount';";
+	$pool_plotcount = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $pool_plotcount;
+}
+
+function get_my_plotcount() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='my-plotcount';";
+	$my_plotcount = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $my_plotcount;
+}
+
+function get_pool_plotsize() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='pool-plotsize';";
+	$pool_plotsize = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return number_format($pool_plotsize,2);
+}
+
+function get_pool_unpaid() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='pool-unpaid';";
+	$pool_unpaid = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $pool_unpaid;
+}
+
+function get_pool_paid() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='pool-paid';";
+	$pool_paid = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $pool_paid;
+}
+
+function get_my_netspace() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$my_net = number_format(mysqli_query($link,"select value from dictionary where name='my-netspace';")->fetch_object()->value,2);
+	mysqli_close($link);
+	return number_format($my_net,2);
+}
+
+function get_pool_netspace() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$spacepool_net = number_format(mysqli_query($link,"select value from dictionary where name='spacepool-netspace';")->fetch_object()->value,2);
+	mysqli_close($link);
+	return $spacepool_net;
+}
+
+function get_chia_netspace() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$chia_net = number_format(mysqli_query($link,"select value from dictionary where name='chia-netspace';")->fetch_object()->value,2);
+	mysqli_close($link);
+	return $chia_net;
+}
+
+function get_pool_ttw() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$spacepool_ttw = mysqli_query($link,"select value from dictionary where name='spacepool-time-to-win';")->fetch_object()->value;
+	mysqli_close($link);
+	return number_format($spacepool_ttw,0) . "s (" . number_format($spacepool_ttw/60,) . "m)";
+}
+
+function get_my_ttw() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$chia_ttw = mysqli_query($link,"select value from dictionary where name='chia-ttw';")->fetch_object()->value;
+	mysqli_close($link);
+	return str_replace("_"," ",$chia_ttw);
+}
+
+function get_chia_qty() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='wallet';";
+	$chia_qty = number_format(mysqli_query($link,$sql)->fetch_object()->value,2);
+	mysqli_close($link);
+	return $chia_qty;
+}
+
+function get_chia_price() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='price';";
+	$chia_price = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $chia_price;
+}
+
+function get_chia_balance($chia_qty, $chia_price) {
+	return number_format($chia_qty * $chia_price,2);;
+}
+
+function get_hddcoin_qty() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='hddcoin-wallet';";
+	$hddcoin_qty = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $hddcoin_qty;
+}
+
+function get_hddcoin_price() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='hddcoin-price';";
+	$hddcoin_price = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $hddcoin_price;
+}
+
+function get_hddcoin_balance($hddcoin_qty, $hddcoin_price) {
+	return number_format($hddcoin_qty * $hddcoin_price,2);;
+}
+
+function get_todaysbest_price() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='diskprice';";
+	$diskprice = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	$dpf = explode(",",$diskprice);
+	$todaysbest_price = str_replace("@","$",$dpf[14]);
+	return $todaysbest_price;
+}
+
+function get_todaysbest_url() {
+	// disappointingly the scrape of their website didn't give the URL to the actual Amazon listing 
+	// for the drive, so I'm just linking to the diskprices.com site and it should be the top listing.
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='diskprice';";
+	$diskprice = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	$dpf = explode(",",$diskprice);
+	$todaysbest_url = "<span class='todaysbestpricelabel'>" . $dpf[7] . "/TB " . $dpf[37] . "</span> <a target='_blank' href='https://diskprices.com/?locale=us&condition=new,used&capacity=18-&disk_types=external_hdd,external_hdd25,internal_hdd,internal_hdd25,internal_sshd,internal_sas,external_ssd,internal_ssd,m2_ssd,m2_nvme,u2'>" . substr(str_replace("_"," ", get_todaysbest_price()),0,25) . "</a>";
+	return $todaysbest_url;
+}
+
+function get_server_plotreport($servername) {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select plotreport from servers where name='$servername';";
+	$plotreport = mysqli_query($link,$sql)->fetch_object()->plotreport;
+	mysqli_close($link);
+	return $plotreport;
+}
+
+function get_server_drives($servername) {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select drives from servers where name='$servername';";
+	$drives = mysqli_query($link,$sql)->fetch_object()->drives;
+	mysqli_close($link);
+	return $drives;
+}
+
+function get_server_currentplotdrive($servername) {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select currentplotdrive from servers where name='$servername';";
+	$currentplotdrive = mysqli_query($link,$sql)->fetch_object()->currentplotdrive;
+	mysqli_close($link);
+	return $currentplotdrive;
+}
+
+function get_farmsummary() {
+	$link = mysqli_connect(HOST, USER, PASSWORD, DB);
+	$sql = "select value from dictionary where name='farm-summary';";
+	$farmsummary = mysqli_query($link,$sql)->fetch_object()->value;
+	mysqli_close($link);
+	return $farmsummary;
+}
+

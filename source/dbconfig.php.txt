@@ -1,0 +1,6 @@
+<?php
+    DEFINE("HOST","localhost");
+    DEFINE("DB","brighttree");
+    DEFINE("USER","builder");
+    DEFINE("PASSWORD","BUILDER_PASSWORD");
+?>
