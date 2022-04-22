@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>BrightTree Dashboard</title>
+        <title>Building a Chia Dashboard on Linux</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
@@ -76,7 +76,7 @@
                             <!-- Post title-->
                             <h1 class="fw-bolder mb-1" id="title">Building a Chia Dashboard on Linux - A Walkthrough</h1>
                             <!-- Post meta content-->
-                            <div class="text-muted fst-italic mb-2">Posted on December 14, 2021 by Steve Stepp</div>
+                            <div class="text-muted fst-italic mb-2">Posted on December 17, 2021 by Steve Stepp</div>
                             <!-- Post categories-->
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Chia</a>
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">XCH</a>
@@ -108,12 +108,12 @@
 </blockquote>
 <hr>
 
-<p>I got started with Chia back in early April 2020. While I was familiar with Linux, I wasn't a daily user and didn't know Bash that well. Over the months since then, 
+<p>I got started with Chia back in early April 2021. While I was familiar with Linux, I wasn't a daily user and didn't know Bash that well. Over the months since then, 
 I have slowly put together a series of Bash scripts that are basically the backend for a PHP dashboard application for Chia. This post will walk through the steps to build 
 your own dashboard on Linux from scratch.</p>
 
 <p><b>Note</b>: I built this dashboard for my farm and as a learning experience for Linux and Bash. All my plots are in one NFT and I am in 
-<a href='https://pool.space' target='_blank'>Space Pool</a>. I am also co-farming the fork <a href='https://hddcoin.org' target='_blank'>HHDcoin</a>. You may need to make 
+<a href='https://pool.space' target='_blank'>Space Pool</a>. I am also co-farming the fork <a href='https://hddcoin.org' target='_blank'>HDDcoin</a>. You may need to make 
 adjustments for your configuration.</p>
 
 <p><b>Warning</b>: This Walkthrough is long. Very long. But I think it is fun; hopefully you will too. Even if you do not build the dashboard, you may find it interesting to browse 
@@ -244,7 +244,7 @@ you need to replace that with your actual App Password.</p>
 <li>Tap Done.</li>
 </ol>
 
-<p>Now let's exit the ssmtp configuration file and add your Gmail details:</p>
+<p>Now let's edit the ssmtp configuration file and add your Gmail details:</p>
 
 <code id='codebox-004' >
 <button class='copybutton' onclick="copycode('codebox-004')" title='Copy to clipboard'></button>
@@ -276,7 +276,7 @@ hostname=jabba
 <button class='copybutton' onclick="copycode('codebox-008')" title='Copy to clipboard'></button>
 <pre>
 AuthUser=username@gmail.com
-AuthPass=&lt;app_password&gt;
+AuthPass=APP_PASSWORD
 UseTLS=YES
 
 </pre>
@@ -898,8 +898,8 @@ mysql&gt; select * from servers;
 
 <hr>
 
-<p>For the dictionary table the Bash scripts are going to expect some records to exist already so we will insert a bunch of rows with names but empty values. Then the 
-Bash scripts will fill in the data for us.</p>
+<p>For the dictionary table the Bash scripts are going to expect some records to exist already so we will insert a bunch of rows with names but sample values. Then the 
+Bash scripts will update the data for us.</p>
 
 <code id='codebox-048' >
 <button class='copybutton' onclick="copycode('codebox-048')" title='Copy to clipboard'></button>
@@ -956,6 +956,7 @@ functions we use in the index page.</p>
 
 <h3 id="htaccess">.htaccess file</h3>
 
+<!-- 	This file kept giving issues in the browser for being able to download. The browser kept blocking it, so I'm just not going to mess it it.
 </br><div>
 	<div class='right skip'>Skip to<br><a href='#dbconfig'>dbconfig.php file</a></div>
 	<fieldset class='adventure'><legend><img src="assets/swords.png" width="28px;" height="" alt="Choose your own adventure" /> Choose Your Own Adventure!</legend>
@@ -964,6 +965,7 @@ functions we use in the index page.</p>
 		
 </fieldset></div>
 </br>
+-->
 
 <p>First we are going to create the .htaccess file. We will create this in our main site folder:</p>
 
@@ -4326,7 +4328,7 @@ sudo chmod +x ~/code/brighttree/*.sh
 </br>
 
 <p>The index.php file is the actual dashboard php code. We created a sample index.php early on as a test, but we'll add everything to it now. The dashboard uses 
-<a href='https://bootstrap.com' target='_blank'>Bootstrap</a> and <a href='https://fonts.google.com' target='_blank'>Google Fonts</a>. Everything you need is already in the script 
+<a href='https://getbootstrap.com/' target='_blank'>Bootstrap</a> and <a href='https://fonts.google.com' target='_blank'>Google Fonts</a>. Everything you need is already in the script 
 we will add, those links are just for reference if you want more info.</p>
 
 <h3 id="index">index.php</h3>
@@ -4482,7 +4484,18 @@ function build_page_top() {
 			font-weight: normal; 
 			border-radius: 28px; 
 			border: 2px solid #ffc90e; 
-		 }
+		}
+
+		.poolname { 
+			font-size: 2.5rem;  
+			font-family: 'Passion One', cursive;
+			padding: 28px 0px 0px 0px;
+			color: #ffc90e; 
+			font-weight: normal; 
+			background-color: #0f1711;
+			float:right;
+		}
+
 	&lt;/style&gt;
 
 	&lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"&gt;
@@ -4711,7 +4724,6 @@ function build_sidebar() {
 ?&gt;
 	&lt;div class='col-lg-3 col-xs-12 col-sm-12 col-md-12 sidebar'&gt;
 			&lt;div class='poolrank'&gt;&lt;span class='label'&gt;Rank &lt;/span&gt;&lt;span class='rankvalue'&gt;&amp;nbsp;&lt;?=$pool_rank;?&gt;&lt;/span&gt;&lt;/div&gt;
-			&lt;br&gt;
 			&lt;div class='myplotcount'&gt;&lt;span class='label'&gt;My Plot Count: &lt;/span&gt;&lt;?=$my_plotcount;?&gt;&lt;/div&gt;
 			&lt;div class='poolplotcount'&gt;&lt;span class='label'&gt;Pool Plot Count: &lt;/span&gt;&lt;?=$pool_plotcount;?&gt;&lt;/div&gt;
 			&lt;div class='poolplotsize'&gt;&lt;span class='label'&gt;Pool Plot Size: &lt;/span&gt;&lt;?=$pool_plotsize;?&gt;&lt;/div&gt;
@@ -5173,6 +5185,7 @@ dashboard). Below, I'll describe each line.</p>
 	approximate time I will have a new transaction since I'm in a pool and getting basically a payout every 24.5 hours. </li>
 	<li>chiadaily.sh script is prone to label servers with the wrong plot count after a Chia upgrade. The sequence of harvesters sometimes changes in the farm summary and the method
 	used to get the values is simply counting lines, not based on finding the correct IP address first.</li>
+	<li>If one of the servers goes down, the Bash script causes error emails to get sent out. I plan to update the scripts to ensure "chia_harvester" is running otherwise exit script.</li>
 </ul>
 
 </br>
@@ -5345,7 +5358,6 @@ sudo apt install screen
 	<li><a href="#responsive">RESPONSIVE DESIGN</a></li>
 	<li><a href="#autostart">AUTO START FARMING AND HARVESTING PROCESSES</a></li>
 	<li><a href="#installuseful">INSTALLING OTHER USEFUL SOFTWARE PACKAGES</a></li>
-	<li><a href="#todo">STILL NEED TODO</a></li>
 	<li><a href="#done">And We Are Done</a></li>
 </ul>
 					</div><!-- card-body -->
@@ -5357,6 +5369,7 @@ sudo apt install screen
                         <div class="card-body">
 
 <p><span class='donate-address-label'>Chia (XCH):</span> <span class='donate-address-value'>xch1xz9g7cyy79vnrh6nuyh86jq4ps6ah2ny0ck2050wfqqfjwkyk0mqd89etp</span></p>
+<p><span class='donate-address-label'>HDDcoin (HDD):</span> <span class='donate-address-value'>hdd19vatjqxka49c5lht6nrf2cqc94va6rf9vv2mzu2793vq4dwq8wes842qff</span></p>
 <p><span class='donate-address-label'>Bitcoin (BTC) <em>no fee on Coinbase</em>:</span> <span class='donate-address-value'>3ADGMs1i6MU8Bxnr8qC6CPmgTUAS6DevyT</span></p>
 <p><span class='donate-address-label'>Etherium (ETH) <em>no fee on Coinbase</em>:</span> <span class='donate-address-value'>0x1F604e5a010f42F36e0C24868454f08056bc5B0A</span></p>
 <p><span class='donate-address-label'>Venmo:</span> <span class='donate-address-value'>@steppsr</span></p>
